@@ -20,7 +20,17 @@ vim.keymap.set('n', '<C-Left>', '<C-w>h', { desc = "Ventana Izquierda" })
 vim.keymap.set('n', '<C-Down>', '<C-w>j', { desc = "Ventana Abajo" })
 vim.keymap.set('n', '<C-Up>', '<C-w>k', { desc = "Ventana Arriba" })
 vim.keymap.set('n', '<C-Right>', '<C-w>l', { desc = "Ventana Derecha" })
-
+-- Redimensionar ventanas (Alt + Flechas)
+-- Redimensionar ventanas con ALT + Flechas (Comandos de Ventana Directos)
+-- En Windows/Neovim <M- es la tecla Alt
+vim.keymap.set('n', '<M-Right>', '<C-w>5>', { desc = "Aumentar ancho" })
+vim.keymap.set('n', '<M-Left>', '<C-w>5<', { desc = "Disminuir ancho" })
+vim.keymap.set('n', '<M-Down>', '<C-w>5+', { desc = "Aumentar alto" })
+vim.keymap.set('n', '<M-Up>', '<C-w>5-', { desc = "Disminuir alto" })
+-- Maximizar la ventana actual (Space + m)
+vim.keymap.set('n', '<leader>m', '<C-w>|<C-w>_', { desc = "Maximizar ventana" })
+-- Igualar todas las ventanas (Space + =)
+vim.keymap.set('n', '<leader>=', '<C-w>=', { desc = "Igualar ventanas" })
 -- La función definitiva para cerrar archivos en Windows
 vim.keymap.set("n", "<leader>q", function()
   local bufs = vim.fn.getbufinfo({ buflisted = 1 })

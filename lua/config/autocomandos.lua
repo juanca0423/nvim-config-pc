@@ -108,16 +108,34 @@ if file then
 | `Ctrl + t`| Abrir/Cerrar Nvim-Tree | Explorador |
 | `Tab / S-Tab`| Siguiente / Anterior pestaña | Buffers |
 | `<leader>q` | Cerrar pestaña actual | General |
-|<leader>ba|Cerrar los demás buffers|General|
+|`<leader>ba`|Cerrar los demás buffers|General|
+
+
+### 🖥️ Control de Ventana (Windows)
+| Atajo | Acción |
+| :--- | :--- |
+| `F11` | Pantalla Completa |
+| `Win + ↑` | Maximizar Ventana |
 
 
 ### 🪟 Navegación de Ventanas
 |Atajo|Acción|Teclas Vim|
 | :--- | :--- | :--- |
-|`<C-←>`|Ventana Izquierda|h|
-|`<C-↓>`|Ventana Abajo|j|
-|`<C-↑>`|Ventana Arriba|k|
-|`<C-→>`|Ventana Derecha|l|
+|`<C-◀>`|Ventana Izquierda|h|
+|`<C-▼>`|Ventana Abajo|j|
+|`<C-▲>`|Ventana Arriba|k|
+|`<C-▶>`|Ventana Derecha|l|
+
+
+### 📏 Redimensionar Ventanas
+| Atajo | Acción | Icono |
+| :--- | :--- | :--- |
+| `<A-Up>` | Más alto | ▲ |
+| `<A-Down>` | Menos alto | ▼ |
+| `<A-Left>` | Menos ancho | ◀️ |
+| `<A-Right>` | Más ancho | ▶️ |
+|`<leader>m`|Maximizar ventana|dentro terminal|
+|`<leader> =`|Igualar ventanas|dentro terminal|
 
 
 ### 🔍 Buscadores y Reemplazo
