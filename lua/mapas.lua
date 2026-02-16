@@ -53,7 +53,7 @@ vim.keymap.set('n', '<Tab>', ':BufferLineCycleNext<CR>', { desc = "Siguiente pes
 vim.keymap.set('n', '<S-Tab>', ':BufferLineCyclePrev<CR>', { desc = "Pestaña anterior" })
 
 -- Explorador de archivos
-vim.keymap.set('n', '<C-n>', function()
+vim.keymap.set('n', '<C-t>', function()
   if ok_tree then
     nt_api.tree.toggle({ focus = true, find_file = true })
   else

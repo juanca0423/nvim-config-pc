@@ -7,15 +7,18 @@ vim.g.mapleader = ","
 -- Shell Windows (Optimizado una sola vez)
 if vim.fn.has("win32") == 1 then
   -- Optimización para que la shell de Windows responda rápido
-  vim.o.shell = "cmd.exe"
-  vim.o.shellcmdflag = "/c"
-  vim.opt.shell = "powershell.exe"
-  vim.opt.shellcmdflag =
-  "-NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
-  vim.opt.shellredir = "2>&1 | Out-File -Encoding UTF8 %s"
-  vim.opt.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s"
-  vim.opt.shellquote = ""
-  vim.opt.shellxquote = ""
+  local powershell_options = {
+    shell = "pwsh.exe",
+    shellcmdflag =
+    "-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;",
+    shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait",
+    shellpipe = "2>&1 | Out-File -Encoding UTF8 %s",
+    shellquote = "",
+    shellxquote = "",
+  }
+  for option, value in pairs(powershell_options) do
+    vim.opt[option] = value
+  end
   vim.g.python3_host_prog = nil
 end
 
