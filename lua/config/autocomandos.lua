@@ -37,7 +37,12 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     vim.lsp.buf.format({ timeout_ms = 1000 })
   end,
 })
-
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.treesitter.start()
+  end,
+})
 -- 3. AJUSTES PARA HANDLEBARS Y COLORES
 vim.filetype.add({ extension = { hbs = "handlebars" } })
 

@@ -13,11 +13,12 @@ return {
         additional_vim_regex_highlighting = false,
       },
     })
-    -- Fuerza la activación del motor en archivos Markdown
-    vim.api.nvim_create_autocmd({ "FileType" }, {
-      pattern = { "markdown" },
+    -- Fuerza la activación del motor en archivos Markdown con un delay mínimo
+    vim.api.nvim_create_autocmd({ "BufEnter", "FileType" }, {
+      pattern = { "*.md", "markdown" },
       callback = function()
-        vim.treesitter.start()
+        -- Usamos pcall para evitar errores si el parser aún se está cargando
+        pcall(vim.treesitter.start)
       end,
     })
   end,

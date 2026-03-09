@@ -159,3 +159,19 @@ vim.keymap.set("n", "<leader>aa", "<cmd>Alpha<cr>", { desc = "Ver Pantalla de In
 
 -- Administración
 vim.keymap.set('n', '<Leader>cl', ':ClearNvim<CR>', { desc = 'Limpiar Caché' })
+
+-- Ejecutar la linea seleccionada de Sql o el bloque
+vim.keymap.set('v', '<leader>rq', ':DB<CR>', { desc = "Ejecutar consilta Sql (Visual)" })
+vim.keymap.set('n', '<leader>rq', ':DB<CR>', { desc = "Ejecutar linea actual" })
+
+-- Ejecutar consulta y guardar como JSON (selecciona el SQL en modo visual y presiona ,bj)
+vim.keymap.set("v", "<leader>bj", ":DB --format json<CR>", { desc = "Resultado SQL a JSON" })
+
+-- Si quieres que se guarde en un archivo físico automáticamente:
+vim.api.nvim_create_user_command('SqlToJson', function()
+  local file = vim.fn.input('Nombre del archivo (ej: datos.json): ')
+  if file ~= "" then
+    vim.cmd('vno <leader>bj :DB --format json > ' .. file .. '<CR>')
+    print("\n[SQL] Resultado se guardará en " .. file)
+  end
+end, {})

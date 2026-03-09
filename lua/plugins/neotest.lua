@@ -9,16 +9,14 @@ return {
   },
   config = function()
     local neotest = require("neotest")
-
-    neotest.setup({
+    require("neotest").setup({
       adapters = {
         require("neotest-golang")({
-          runner = "go",
+          -- CAMBIA ESTO:
           go_test_args = { "-v", "-count=1" },
-          is_test_file = function(file_path)
-            return file_path:match("_test%.go$") ~= nil
-          end,
-          dap_go_enabled = true,
+          runner = "gotestsum",
+          -- Esto hará que los tests sean más estables en Windows
+          gotestsum_args = { "--format=standard-verbose" },
         }),
       },
       icons = {
