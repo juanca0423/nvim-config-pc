@@ -38,11 +38,7 @@ ls.add_snippets("handlebars", {
     i(0),
     t({ "", "</body>", "</html>" }),
   }),
-  s("hif", {
-    t("{{#if "), i(1, "condicion"), t("}}"),
-    t({ "", "  " }), i(0),
-    t({ "", "{{/if}}" }),
-  }),
+
   s("bs-input", {
     t({ '<div class="mb-3">', '  <label class="form-label">' }),
     i(1, "Nombre del Campo"),
@@ -56,11 +52,36 @@ ls.add_snippets("handlebars", {
     i(4, "datos"),
     t({ '">', '</div>' }),
   }),
-  s("heach", {
-    t("{{#each "), i(1, "items"), t("}}"),
-    t({ "", "  " }), i(0),
+  -- Snippet para {{#if}} ... {{else}} ... {{/if}}
+  s("ife", {
+    t("{{#if "), i(1, "condicion"), t("}}"),
+    t({ "", "  " }), i(2),
+    t({ "", "{{else}}", "  " }), i(3),
+    t({ "", "{{/if}}" }),
+  }),
+
+  -- Snippet para {{#each}} ... {{/each}}
+  s("eac", {
+    t("{{#each "), i(1, "array"), t("}}"),
+    t({ "", "  " }), i(2, ""),
     t({ "", "{{/each}}" }),
   }),
+
+  -- Snippet para un {{#if}} simple (sin else)
+  s("if", {
+    t("{{#if "), i(1, "condicion"), t("}}"),
+    t({ "", "  " }), i(2),
+    t({ "", "{{/if}}" }),
+  }),
+
+  -- Snippet: row -> Fila de tabla contable estándar
+  s("row", {
+    t("<tr>"),
+    t({ "", "  <td>" }), i(1, "Descripcion"), t("</td>"),
+    t({ "", "  <td class='text-end'>{{formatCurrency " }), i(2, "valor"), t("}}</td>"),
+    t({ "", "</tr>" }),
+  }),
+
   s("trdb", {
     t("<tr>"),
     t({ "", "  <td>{{ " }), i(1, "id"), t(" }}</td>"),
@@ -78,6 +99,18 @@ ls.add_snippets("go", {
     t('" db:"'), f(snake_case, { 1 }), t('"`'),
     i(0),
   }),
+
+  s("newsheet", {
+    t({ "// --- Nueva Pestaña: " }), i(1, "Nombre"), t({ "", "" }),
+    t("sheet := \""), i(2, "NombreHoja"), t({ "\"", "" }),
+    t("f.NewSheet(sheet)"),
+    t({ "", "f.SetCellValue(sheet, \"A1\", \"" }), i(3, "Encabezado"), t({ "\")", "" }),
+    t("f.SetCellStyle(sheet, \"A1\", \"A1\", headerStyle)"),
+    t({ "", "", "rowIdx := 2", "for i, data := range " }), i(4, "lista"), t({ " {", "" }),
+    t("    f.SetCellValue(sheet, \"A\"+strconv.Itoa(rowIdx), data.Nombre)"),
+    t({ "", "    rowIdx++", "}" }),
+  }),
+
   s("iferr", {
     t("if err != nil {"),
     t({ "", "  return " }), i(1, "nil, err"),

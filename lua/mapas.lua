@@ -1,177 +1,210 @@
 -- =============================================================================
--- CONFIGURACIÓN PREVIA
+-- FUNCIONES DE APOYO (Carga bajo demanda)
 -- =============================================================================
-local ok_tree, nt_api = pcall(require, "nvim-tree.api")
-local builtin = require('telescope.builtin')
-local ls = require("luasnip")
-local dap = require('dap')
+local function docker_ui(cmd)
+	require("toggleterm.terminal").Terminal
+		:new({
+			cmd = cmd,
+			direction = "float",
+			close_on_exit = false,
+		})
+		:toggle()
+end
 
--- =============================================================================
--- KEYMAPS GENERALES (Archivos y Ventanas)
--- =============================================================================
-vim.keymap.set('n', '<leader>w', ':w<CR>', { desc = "Guardar" })
-vim.keymap.set('n', '<leader>W', ':wq<CR>', { desc = "Guardar y Salir" })
-
-
-vim.keymap.set('n', '<leader>ba', ':%bd|e#|bd#<CR>', { desc = "Cerrar los demás buffers" })
-
--- Moverse entre ventanas (Ctrl + Flechas) - Muy útil en Windows
-vim.keymap.set('n', '<C-Left>', '<C-w>h', { desc = "Ventana Izquierda" })
-vim.keymap.set('n', '<C-Down>', '<C-w>j', { desc = "Ventana Abajo" })
-vim.keymap.set('n', '<C-Up>', '<C-w>k', { desc = "Ventana Arriba" })
-vim.keymap.set('n', '<C-Right>', '<C-w>l', { desc = "Ventana Derecha" })
--- Redimensionar ventanas (Alt + Flechas)
--- Redimensionar ventanas con ALT + Flechas (Comandos de Ventana Directos)
--- En Windows/Neovim <M- es la tecla Alt
-vim.keymap.set('n', '<M-Right>', '<C-w>5>', { desc = "Aumentar ancho" })
-vim.keymap.set('n', '<M-Left>', '<C-w>5<', { desc = "Disminuir ancho" })
-vim.keymap.set('n', '<M-Down>', '<C-w>5+', { desc = "Aumentar alto" })
-vim.keymap.set('n', '<M-Up>', '<C-w>5-', { desc = "Disminuir alto" })
--- Maximizar la ventana actual (Space + m)
-vim.keymap.set('n', '<leader>m', '<C-w>|<C-w>_', { desc = "Maximizar ventana" })
--- Igualar todas las ventanas (Space + =)
-vim.keymap.set('n', '<leader>=', '<C-w>=', { desc = "Igualar ventanas" })
--- La función definitiva para cerrar archivos en Windows
-vim.keymap.set("n", "<leader>q", function()
-  local bufs = vim.fn.getbufinfo({ buflisted = 1 })
-
-  if #bufs <= 1 then
-    -- Si es el último archivo, NO lo borres todavía.
-    -- Primero traemos Alpha al frente.
-    local ok, alpha = pcall(require, "alpha")
-    if ok then
-      -- Abrimos Alpha en la ventana actual
-      alpha.start(false)
-
-      -- Ahora que Alpha está ocupando el lugar,
-      -- borramos el archivo que estaba antes (el buffer previo #)
-      vim.schedule(function()
-        local prev_buf = vim.fn.bufnr('#')
-        if prev_buf ~= -1 and vim.api.nvim_buf_is_valid(prev_buf) then
-          vim.cmd("silent! bwipeout " .. prev_buf)
-        end
-      end)
-    end
-  else
-    -- Si tienes más archivos abiertos, cerramos el actual normalmente
-    vim.cmd("bd")
-  end
-end, { desc = "Cerrar archivo y volver a Alpha si es el último" })
-
--- Pestañas (Bufferline)
-vim.keymap.set('n', '<Tab>', ':BufferLineCycleNext<CR>', { desc = "Siguiente pestaña" })
-vim.keymap.set('n', '<S-Tab>', ':BufferLineCyclePrev<CR>', { desc = "Pestaña anterior" })
-
--- Explorador de archivos
-vim.keymap.set('n', '<C-t>', function()
-  if ok_tree then
-    nt_api.tree.toggle({ focus = true, find_file = true })
-  else
-    print("NvimTree no cargado")
-  end
-end, { silent = true, desc = "Alternar Explorador" })
+local function toggle_maximize()
+	if vim.t.maximized then
+		vim.cmd("wincmd =")
+		vim.t.maximized = false
+		print("📏 Ventanas restauradas")
+	else
+		vim.cmd("vertical resize | resize")
+		vim.t.maximized = true
+		print("🔍 Ventana maximizada")
+	end
+end
 
 -- =============================================================================
--- LSP e INTELIGENCIA (gd, gr, K)
+-- NAVEGACIÓN Y ARCHIVOS
 -- =============================================================================
-vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { desc = "Ir a Definición" })
-vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, { desc = "Ir a Implementación" })
-vim.keymap.set('n', 'gr', vim.lsp.buf.references, { desc = "Ver Referencias" })
-vim.keymap.set('n', 'K', vim.lsp.buf.hover, { desc = 'Ver Documentación' })
-vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = "Renombrar símbolo" })
-vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Acciones de código" })
-vim.keymap.set('i', '<C-k>', vim.lsp.buf.signature_help, { desc = "Ayuda de firma" })
+vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Guardar" })
+vim.keymap.set("n", "<leader>aa", "<cmd>Alpha<cr>", { desc = "Inicio" })
+vim.keymap.set("n", "<leader>q", "<cmd>bd<cr>", { desc = "Cerrar Buffer" }) -- Simplificado
 
--- Diagnósticos (Errores)
-vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, { desc = "Siguiente Error" })
-vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, { desc = "Error Anterior" })
-vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Ver Error flotante" })
-vim.keymap.set('n', '<leader>v', function()
-  vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
+-- Limpieza de Buffers (Tu favorita)
+vim.keymap.set("n", "<leader>ba", function()
+	local current = vim.api.nvim_get_current_buf()
+	local count = 0
+	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+		if bufnr ~= current and vim.api.nvim_buf_is_loaded(bufnr) then
+			if pcall(vim.api.nvim_buf_delete, bufnr, { force = false }) then
+				count = count + 1
+			end
+		end
+	end
+	print("🧹 Buffers limpios: " .. count)
+end, { desc = "Limpiar otros buffers" })
+
+-- Ventanas
+vim.keymap.set("n", "<leader>zm", toggle_maximize, { desc = "Zen Maximize" })
+vim.keymap.set("n", "<leader>=", "<C-w>=", { desc = "Igualar ventanas" })
+
+-- =============================================================================
+-- LSP Y PROGRAMACIÓN
+-- =============================================================================
+vim.keymap.set("i", "<C-k>", vim.lsp.buf.signature_help, { desc = "Firma" })
+vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Implementación" })
+vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Ir a Definición" })
+vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Ver Referencias" })
+vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Info Hover" })
+
+-- Snippets (Salto con J y K)
+vim.keymap.set({ "i", "s" }, "<C-k>", function()
+	local ls = require("luasnip")
+	if ls.expand_or_jumpable() then
+		ls.expand_or_jump()
+	end
+end)
+vim.keymap.set({ "i", "s" }, "<C-j>", function()
+	local ls = require("luasnip")
+	if ls.jumpable(-1) then
+		ls.jump(-1)
+	end
+end)
+
+vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "Renombrar" })
+vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "Acciones" })
+
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "Error flotante" })
+-- Diagnósticos
+vim.keymap.set("n", "]d", function()
+	vim.diagnostic.jump({ count = 1 })
+end, { desc = "Siguiente Error" })
+vim.keymap.set("n", "[d", function()
+	vim.diagnostic.jump({ count = -1 })
+end, { desc = "Error Anterior" })
+vim.keymap.set("n", "<leader>v", function()
+	vim.diagnostic.config({ virtual_text = not vim.diagnostic.config().virtual_text })
 end, { desc = "Toggle Texto Virtual" })
 
--- =============================================================================
--- TELESCOPE (Buscadores)
--- =============================================================================
-vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Buscar Archivos" })
-vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = "Buscar Texto" })
-vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Buscar en Buffers" })
-vim.keymap.set('n', '<leader>fr', builtin.oldfiles, { desc = "Archivos Recientes" })
-vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = "Buscar Ayuda" })
-vim.keymap.set("n", "<leader>h", ":Telescope yank_history<CR>", { desc = "Historial Yank" })
-vim.keymap.set('n', '<leader>fn', function()
-  builtin.find_files({ cwd = vim.fn.stdpath("config") })
-end, { desc = 'Config de Neovim' })
+-- Atajo universal para saltar a funciones (gf mejorado)
+vim.keymap.set("n", "gf", [[/\vfunc|function|const.* \=\>|async\s+function<CR>]], { silent = true })
 
 -- =============================================================================
 -- DEBUGGING (DAP)
 -- =============================================================================
-vim.keymap.set('n', '<leader>db', dap.toggle_breakpoint, { desc = "Breakpoint" })
-vim.keymap.set('n', '<leader>dc', dap.continue, { desc = "Debug: Continuar" })
-vim.keymap.set('n', '<leader>dn', dap.step_over, { desc = "Debug: Siguiente línea" })
-vim.keymap.set('n', '<leader>di', dap.step_into, { desc = "Debug: Entrar" })
-vim.keymap.set('n', '<leader>do', dap.step_out, { desc = "Debug: Salir" })
-vim.keymap.set('n', '<leader>dr', dap.restart, { desc = "Debug: Reiniciar" })
-vim.keymap.set('n', '<leader>du', function() require('dapui').toggle() end, { desc = "DAP UI" })
-vim.keymap.set('n', '<leader>gt', function() require('dap-go').debug_test() end, { desc = "Debug Test Go" })
+local dap = require("dap")
+vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Breakpoint" })
+vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "DAP: Continuar" })
+vim.keymap.set("n", "<leader>dn", dap.step_over, { desc = "DAP: Siguiente" })
+vim.keymap.set("n", "<leader>di", dap.step_into, { desc = "DAP: Entrar" })
+vim.keymap.set("n", "<leader>dr", dap.restart, { desc = "DAP: Reiniciar" })
+vim.keymap.set("n", "<leader>gt", function()
+	require("dap-go").debug_test()
+end, { desc = "Test Go" })
 
 -- =============================================================================
--- TERMINAL Y OTROS
+-- DOCKER Y SQL
 -- =============================================================================
-vim.keymap.set('n', '<leader>gg', ':term lazygit<CR>', { desc = "Lazygit" })
-vim.keymap.set('n', '<leader>t', ':sp | terminal<CR>i', { desc = 'Abrir Terminal' })
-vim.keymap.set('t', '<Esc><Esc>', [[<C-\><C-n>]], { desc = "Salir modo terminal" })
+vim.keymap.set("n", "<leader>dps", function()
+	docker_ui("docker ps")
+end, { desc = "Docker Status" })
+vim.keymap.set("n", "<leader>ddo", function()
+	docker_ui("docker-compose down")
+end, { desc = "Compose Down" })
+vim.keymap.set("n", "<leader>dk", function()
+	docker_ui("docker restart go_web_app")
+end, { desc = "Restart App" })
+vim.keymap.set("n", "<leader>drb", function()
+	docker_ui("docker-compose down && docker-compose up --build -d")
+end, { desc = "Docker Rebuild" })
+vim.keymap.set("n", "<leader>gg", "<cmd>term lazygit<CR>", { desc = "Lazygit" })
 
--- Snippets
-vim.keymap.set({ "i", "s" }, "<C-k>", function() if ls.expand_or_jumpable() then ls.expand_or_jump() end end)
-vim.keymap.set({ "i", "s" }, "<C-j>", function() if ls.jumpable(-1) then ls.jump(-1) end end)
--- Pegar en modo visual sin perder lo que tenías copiado
-vim.keymap.set("x", "p", 'P', { desc = "Pegar sin sobreescribir registro" })
+-- SQL
+vim.keymap.set({ "n", "v" }, "<leader>rq", "<cmd>DB<CR>", { desc = "Ejecutar SQL" })
+vim.keymap.set("v", "<leader>bj", "<cmd>DB --format json<CR>", { desc = "SQL a JSON" })
+
 -- =============================================================================
--- GUÍA Y ADMINISTRACIÓN (Corregido para Windows)
+-- TERMINAL (Fix para Windows)
 -- =============================================================================
+vim.keymap.set("n", "<leader>te", "<cmd>split | terminal<CR>i", { desc = "Terminal" })
+vim.keymap.set("t", "<Esc><Esc>", [[<C-\><C-n>]], { desc = "Escape Terminal" })
 
--- Guía de atajos PC (Usa la ruta dinámica del config)
-vim.keymap.set('n', '<leader>.', function()
-  local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
-  -- Comprobar si el archivo existe antes de abrirlo
-  if vim.fn.filereadable(path) == 1 then
-    vim.cmd("vsplit " .. path)
-  else
-    print("Error: No se encuentra CHEATSHEET.md")
-  end
-end, { desc = "Ver Guía PC" })
+-- =============================================================================
+-- AUTOCOMANDOS (HBS y Otros)
+-- =============================================================================
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "handlebars",
+	callback = function()
+		vim.keymap.set("n", "]]", [[/{{[#/].*}}<CR>]], { buffer = true, silent = true })
+		vim.keymap.set("n", "[[", [[?{{[#/].*}}<CR>]], { buffer = true, silent = true })
+	end,
+})
 
--- Editar Snippets (Ruta inteligente)
-vim.keymap.set('n', '<Leader>es', function()
-  local path = vim.fn.stdpath("config") .. "/lua/config/misnipet.lua"
-  vim.cmd("edit " .. path)
-end, { desc = 'Editar Snippets' })
+-- =============================================================================
+-- CONFIGURACIÓN DE DEPENDENCIAS (Lazy loading friendly)
+-- =============================================================================
+local function toggle_tree()
+	local ok, api = pcall(require, "nvim-tree.api")
+	if ok then
+		api.tree.toggle({ focus = true, find_file = true })
+	else
+		print("NvimTree no cargado")
+	end
+end
 
--- Recargar Config (Mejorado para Lazy.nvim)
-vim.keymap.set('n', '<Leader>sv', function()
-  vim.cmd("source $MYVIMRC")
-  print("Configuración recargada!")
-end, { desc = 'Recargar Config' })
+-- =============================================================================
+-- VENTANAS Y NAVEGACIÓN (Layout)
+-- =============================================================================
+-- Moverse (Ctrl + Flechas)
+vim.keymap.set("n", "<C-Left>", "<C-w>h")
+vim.keymap.set("n", "<C-Down>", "<C-w>j")
+vim.keymap.set("n", "<C-Up>", "<C-w>k")
+vim.keymap.set("n", "<C-Right>", "<C-w>l")
 
--- Atajo para volver al Dashboard (Alpha)
-vim.keymap.set("n", "<leader>aa", "<cmd>Alpha<cr>", { desc = "Ver Pantalla de Inicio" })
+-- Redimensionar (Alt + Flechas)
+vim.keymap.set("n", "<M-Right>", "<cmd>vertical resize +5<CR>")
+vim.keymap.set("n", "<M-Left>", "<cmd>vertical resize -5<CR>")
+vim.keymap.set("n", "<M-Down>", "<cmd>resize +5<CR>")
+vim.keymap.set("n", "<M-Up>", "<cmd>resize -5<CR>")
 
--- Administración
-vim.keymap.set('n', '<Leader>cl', ':ClearNvim<CR>', { desc = 'Limpiar Caché' })
+-- Control de Layout
+vim.keymap.set("n", "<leader>m", "<C-w>|<C-w>_", { desc = "Maximizar" })
+vim.keymap.set("n", "<leader>=", "<C-w>=", { desc = "Igualar ventanas" })
+vim.keymap.set("n", "<C-t>", toggle_tree, { desc = "Explorador de Archivos" })
 
--- Ejecutar la linea seleccionada de Sql o el bloque
-vim.keymap.set('v', '<leader>rq', ':DB<CR>', { desc = "Ejecutar consilta Sql (Visual)" })
-vim.keymap.set('n', '<leader>rq', ':DB<CR>', { desc = "Ejecutar linea actual" })
+-- =============================================================================
+-- TELESCOPE (Buscadores)
+-- ============================================================================
+local tb = require("telescope.builtin")
+vim.keymap.set("n", "<leader>ff", tb.find_files, { desc = "Buscar Archivos" })
+vim.keymap.set("n", "<leader>fg", tb.live_grep, { desc = "Buscar Texto" })
+vim.keymap.set("n", "<leader>fb", tb.buffers, { desc = "Buscar en Buffers" })
+vim.keymap.set("n", "<leader>fr", tb.oldfiles, { desc = "Recientes" })
+vim.keymap.set("n", "<leader>h", "<cmd>Telescope yank_history<CR>", { desc = "Historial Copiado" })
+vim.keymap.set("n", "<leader>td", "<cmd>TodoTelescope<CR>", { desc = "Buscar TODOs" })
+vim.keymap.set("n", "<leader>fs", tb.lsp_document_symbols, { desc = "Símbolos del Archivo" })
+vim.keymap.set("n", "<leader>fS", tb.lsp_dynamic_workspace_symbols, { desc = "Símbolos del Proyecto" })
 
--- Ejecutar consulta y guardar como JSON (selecciona el SQL en modo visual y presiona ,bj)
-vim.keymap.set("v", "<leader>bj", ":DB --format json<CR>", { desc = "Resultado SQL a JSON" })
+-- =============================================================================
+-- ADMIN Y CONFIG
+-- =============================================================================
+vim.keymap.set("n", "<leader>sv", "<cmd>source $MYVIMRC<CR>", { desc = "Recargar Config" })
 
--- Si quieres que se guarde en un archivo físico automáticamente:
-vim.api.nvim_create_user_command('SqlToJson', function()
-  local file = vim.fn.input('Nombre del archivo (ej: datos.json): ')
-  if file ~= "" then
-    vim.cmd('vno <leader>bj :DB --format json > ' .. file .. '<CR>')
-    print("\n[SQL] Resultado se guardará en " .. file)
-  end
-end, {})
+vim.keymap.set("n", "<leader>cl", "<cmd>ClearNvim<CR>", { desc = "Limpiar Caché" })
+
+vim.keymap.set("n", "<leader>f", function()
+	require("conform").format({ async = true, lsp_fallback = true })
+end, { desc = "Formatear Buffer (Manual)" })
+
+vim.keymap.set("n", "<leader>.", function()
+	local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
+	if vim.fn.filereadable(path) == 1 then
+		vim.cmd("vsplit " .. path)
+	end
+end, { desc = "CheatSheet" })
+
+vim.keymap.set("n", "<leader>ud", function()
+	local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
+	os.remove(path)
+	print("🗑️ Guía borrada. Reinicia Neovim para actualizarla.")
+end, { desc = "Update Cheatsheet" })

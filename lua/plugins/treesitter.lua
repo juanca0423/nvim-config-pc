@@ -1,25 +1,45 @@
 return {
-  "nvim-treesitter/nvim-treesitter",
-  build = ":TSUpdate",
-  config = function()
-    -- El pcall protege contra el error de "module not found" si algo falla
-    local ok, configs = pcall(require, "nvim-treesitter.configs")
-    if not ok then return end
+	{
+		"nvim-treesitter/nvim-treesitter",
+		build = ":TSUpdate",
+		event = { "BufReadPost", "BufNewFile" },
+		config = function()
+			local parser_path = (vim.fn.stdpath("data") .. "/site"):gsub("\\", "/")
+			--vim.opt.runtimepath:prepend(parser_install_dir)
 
-    configs.setup({
-      ensure_installed = { "go", "lua", "markdown", "markdown_inline", "html" },
-      highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = false,
-      },
-    })
-    -- Fuerza la activación del motor en archivos Markdown con un delay mínimo
-    vim.api.nvim_create_autocmd({ "BufEnter", "FileType" }, {
-      pattern = { "*.md", "markdown" },
-      callback = function()
-        -- Usamos pcall para evitar errores si el parser aún se está cargando
-        pcall(vim.treesitter.start)
-      end,
-    })
-  end,
+			-- 2. Usamos pcall para cargar la config de forma segura
+			local ok, configs = pcall(require, "nvim-treesitter.configs")
+			if not ok then
+				return
+			end
+
+			configs.setup({
+				parser_install_dir = parser_path,
+				-- En tu lista de ensure_installed dentro de treesitter.lua, añade estos:
+				ensure_installed = {
+					"lua",
+					"go",
+					"javascript",
+					"typescript",
+					"markdown",
+					"vim",
+					"vimdoc",
+					"query",
+					"sql",
+					"html",
+					"css",
+					"http",
+					"embedded_template", -- Para HTML y CSS estándar
+					"glimmer", -- El parser para Ember.js / Glimmer
+				},
+				highlight = { enable = true },
+				indent = { enable = true },
+			})
+		end,
+	},
+	{
+		"nvim-treesitter/nvim-treesitter-context",
+		event = "BufReadPost",
+		opts = { max_lines = 3 },
+	},
 }

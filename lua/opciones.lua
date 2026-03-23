@@ -3,9 +3,13 @@
 -- ==========================================================================
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
-vim.opt.shada = "'100,<50,s10,h" -- Optimización de historial (solo una vez)
-vim.opt.updatetime = 300         -- Respuesta más rápida de la interfaz
-vim.opt.timeoutlen = 500         -- Tiempo de espera para atajos (Leader)
+vim.opt.shada = "!,'100,<50,s10,h"
+-- Explicación:
+-- '100 : Guarda marcas para los últimos 100 archivos.
+-- <50  : Guarda un máximo de 50 líneas por registro.
+-- s10  : Máximo 10kb por item.
+vim.opt.updatetime = 300 -- Respuesta más rápida de la interfaz
+vim.opt.timeoutlen = 500 -- Tiempo de espera para atajos (Leader)
 
 -- ==========================================================================
 -- 2. INTERFAZ VISUAL
@@ -43,39 +47,27 @@ vim.opt.clipboard = "unnamedplus"
 local icons = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = "󰋽 " }
 
 vim.diagnostic.config({
-  virtual_text = { prefix = '󰄴', spacing = 4 },
-  signs = {
-    text = {
-      [vim.diagnostic.severity.ERROR] = icons.Error,
-      [vim.diagnostic.severity.WARN]  = icons.Warn,
-      [vim.diagnostic.severity.HINT]  = icons.Hint,
-      [vim.diagnostic.severity.INFO]  = icons.Info,
-    },
-  },
-  update_in_insert = false,
-  underline = true,
-  severity_sort = true,
-  float = {
-    border = 'rounded',
-    source = "always",
-    header = "",
-    prefix = "",
-    focusable = true,
-  },
+	virtual_text = { prefix = "󰄴", spacing = 4 },
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = icons.Error,
+			[vim.diagnostic.severity.WARN] = icons.Warn,
+			[vim.diagnostic.severity.HINT] = icons.Hint,
+			[vim.diagnostic.severity.INFO] = icons.Info,
+		},
+	},
+	update_in_insert = false,
+	underline = true,
+	severity_sort = true,
+	float = {
+		border = "rounded",
+		source = "always",
+		header = "",
+		prefix = "",
+		focusable = true,
+	},
 })
 
 -- Bordes redondeados para ventanas de ayuda (K)
 vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
 vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
-
--- ==========================================================================
--- 5. GENERADOR AUTOMÁTICO DE GUÍA (PC)
--- ==========================================================================
-local pc_sheet = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
-if vim.fn.filereadable(pc_sheet) == 0 then
-  local file = io.open(pc_sheet, "w")
-  if file then
-    file:write("# 💻 Neovim PC Cheat Sheet\n\nEste archivo se generó automáticamente. Presiona <leader>. para abrirlo.")
-    file:close()
-  end
-end

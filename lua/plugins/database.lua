@@ -23,7 +23,7 @@ return {
     keys = {
       { "<leader>bd", "<cmd>DBUIToggle<cr>",       desc = "Toggle UI de Base de Datos" },
       -- ESTO ES LO QUE FALTABA:
-      { "<leader>S",  "<Plug>(DBUI_ExecuteQuery)", mode = { "n", "v" },                desc = "Ejecutar Query SQL" },
+      { "<leader>sq", "<Plug>(DBUI_ExecuteQuery)", mode = { "n", "v" },                desc = "Ejecutar Query SQL" },
     },
     init = function()
       vim.g.db_ui_use_nerd_fonts = 1

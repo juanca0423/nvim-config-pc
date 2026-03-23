@@ -1,3 +1,16 @@
+local M = {}
+
+function M.setup()
+	local sheet_path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
+
+	-- Solo si NO existe
+	if vim.fn.filereadable(sheet_path) == 1 then
+		return
+	end
+
+	local file = io.open(sheet_path, "w")
+	if file then
+		file:write([[
 # 💻 Neovim PC - Ultimate Cheat Sheet (Sincronizada)
 
 ### 🚀 Navegación y Buffers
@@ -118,3 +131,10 @@
 
 ---
 *Nota: Si cambias un atajo, usa `<leader>cl` y reinicia para actualizar esta guía.*
+]])
+		file:close()
+		print("✅ Nueva CHEATSHEET.md generada.")
+	end
+end
+
+return M
