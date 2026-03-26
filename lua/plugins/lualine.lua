@@ -5,7 +5,12 @@ local function harpoon_status()
 		return ""
 	end
 
-	local marks = harpoon:list().items
+	local list = harpoon:list()
+	if not list then
+		return ""
+	end
+
+	local marks = list.items
 	local current_file_path = vim.fn.expand("%:p:."):gsub("\\", "/")
 
 	for i, item in ipairs(marks) do
@@ -18,15 +23,15 @@ end
 
 return {
 	"nvim-lualine/lualine.nvim",
-	event = "VeryLazy",
+	-- IMPORTANTE: Cambiamos de "VeryLazy" a un evento que no choque con el inicio de Alpha
+	event = "BufReadPost",
 	dependencies = { "ThePrimeagen/harpoon", "catppuccin/nvim" },
 	config = function()
-		local status_cat, catppuccin = pcall(require, "catppuccin.palettes")
-		---@type string|table -- Esto le dice al linter que acepte ambos tipos
+		local status_cat, catppuccin = pcall(require, "catppuccin")
 		local my_theme = "auto"
 
 		if status_cat then
-			local cp = catppuccin.get_palette("mocha")
+			local cp = require("catppuccin.palettes").get_palette("mocha")
 			my_theme = {
 				normal = {
 					a = { bg = cp.blue, fg = cp.mantle, gui = "bold" },
@@ -42,8 +47,12 @@ return {
 
 		require("lualine").setup({
 			options = {
-				theme = my_theme, -- El linter ya no se quejará por el disable de arriba
-				globalstatus = true,
+				theme = my_theme,
+				globalstatus = true, -- Mantenemos esto porque es genial, pero...
+				disabled_filetypes = {
+					statusline = { "alpha", "NvimTree", "dashboard" }, -- ¡ESTO ES LA CLAVE!
+					winbar = { "alpha", "NvimTree" },
+				},
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
 			},

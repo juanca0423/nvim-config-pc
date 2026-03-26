@@ -1,0 +1,9 @@
+# No subir los plugins descargados (ocupa mucho espacio)
+/lazy/
+/nvim-data/
+/undodir/
+/shada/
+
+# No subir archivos temporales de swap o backup
+*.swp
+*.swo

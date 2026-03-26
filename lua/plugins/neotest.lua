@@ -94,5 +94,5 @@ return {
 				end)
 			end,
 		})
-	end, -- Aquí termina la función config
+	end,
 }

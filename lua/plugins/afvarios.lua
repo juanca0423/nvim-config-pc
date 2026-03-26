@@ -1,54 +1,109 @@
 return {
-	-- 1. Snippets (Fragmentos de código)
 	{
 		"L3MON4D3/LuaSnip",
 		version = "v2.*",
 		event = "VeryLazy",
-		-- En Windows, 'make' suele fallar. Si te da error al instalar,
-		-- puedes comentar la línea de 'build'.
-		-- build = "make install_jsregexp"
+		dependencies = { "rafamadriz/friendly-snippets" },
 		config = function()
-			require("luasnip").setup({
+			local luasnip = require("luasnip")
+			luasnip.setup({
 				keep_roots = true,
 				link_roots = true,
 				link_children = true,
 			})
+			require("luasnip.loaders.from_vscode").lazy_load()
 		end,
 	},
-	{ "rafamadriz/friendly-snippets" },
 
-	-- 2. Autopairs (Cierre automático de llaves/paréntesis)
 	{
 		"windwp/nvim-autopairs",
 		event = "InsertEnter",
-		opts = {}, -- Esto es más limpio que 'config = true' en Lazy
+		opts = {
+			check_ts = true,
+			disable_filetype = { "TelescopePrompt", "spectre_panel" },
+		},
 	},
 
-	-- 3. Iconos y Estética
-	{ "onsails/lspkind.nvim" },
+	-- 3. Iconos y EstÃ©tica
 	{
-		"nvim-tree/nvim-web-devicons",
-		opts = { default = true }, -- Corregido: Lazy prefiere usar opts o config
+		"onsails/lspkind.nvim",
+		config = function()
+			require("lspkind").init({
+				mode = "symbol_text", -- Muestra el icono y el texto (ej: 󰅩 Function)
+				preset = "codicons",
+				symbol_map = {
+					Text = "󰉿",
+					Method = "󰆧",
+					Function = "󰊕",
+					Constructor = "",
+					Field = "󰜢",
+					Variable = "󰀫",
+					Class = "󰠱",
+					Interface = "",
+					Module = "",
+					Property = "󰜢",
+					Unit = "󰑭",
+					Value = "󰎟",
+					Enum = "",
+					Keyword = "󰌋",
+					Snippet = "",
+					Color = "󰏘",
+					File = "󰈙",
+					Reference = "󰈚",
+					Folder = "󰉋",
+					EnumMember = "",
+					Constant = "󰏿",
+					Struct = "󰙅",
+					Event = "",
+					Operator = "󰆕",
+					TypeParameter = "",
+				},
+			})
+		end,
 	},
-
 	-- 4. Kulala (Cliente HTTP para Go/APIs)
 	{
-		"ollereid/kulala.nvim",
-		ft = { "http", "rest" }, -- Solo se carga cuando abres archivos de este tipo
-		opts = {},
-		config = function()
-			require("kulala").setup({
-				-- Configuración por defecto muy limpia
-				display_mode = "split",
-			})
-
-			-- Atajos rápidos
-			vim.keymap.set("n", "<leader>hr", function()
-				require("kulala").run()
-			end, { desc = "Ejecutar petición HTTP" })
-			vim.keymap.set("n", "<leader>ha", function()
-				require("kulala").run_all()
-			end, { desc = "Ejecutar todas las peticiones" })
-		end,
+		"mistweaverco/kulala.nvim",
+		keys = {
+			{
+				"<leader>hr",
+				function()
+					require("kulala").run()
+				end,
+				desc = "Ejecutar peticiÃ³n HTTP",
+			},
+			{
+				"<leader>hv",
+				function()
+					require("kulala").toggle_view()
+				end,
+				desc = "Cambiar vista (Cuerpo/Headers)",
+			},
+			{
+				"<leader>hn",
+				function()
+					require("kulala").jump_next()
+				end,
+				desc = "Siguiente peticiÃ³n",
+			},
+			{
+				"<leader>hp",
+				function()
+					require("kulala").jump_prev()
+				end,
+				desc = "PeticiÃ³n anterior",
+			},
+		},
+		-- En tu archivo de configuración de Kulala
+		opts = {
+			display_mode = "split",
+			split_direction = "vertical", -- Mejora para ver tu API a la par del código
+			default_view = "body",
+			icons = {
+				passed = "✔", -- O usa el icono: 
+				failed = "✖", -- O usa el icono: 
+				running = "󱎯", -- Este es el de carga
+			},
+		},
 	},
 }

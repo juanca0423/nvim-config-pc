@@ -50,6 +50,18 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 	end,
 })
 
+-- 4. COMPORTAMIENTO DE INTERFAZ (Versión Segura para Alpha)
+vim.api.nvim_create_autocmd("BufEnter", {
+	group = vim.api.nvim_create_augroup("nvim_tree_close", { clear = true }),
+	nested = true,
+	callback = function()
+		local wins = vim.api.nvim_list_wins()
+		-- Si solo queda una ventana y es NvimTree, cerramos
+		if #wins == 1 and vim.api.nvim_buf_get_name(0):match("NvimTree_") ~= nil then
+			vim.cmd("quit")
+		end
+	end,
+})
 -- 4. COMPORTAMIENTO DE INTERFAZ
 -- Cerrar Neovim si el único buffer que queda es Nvim-Tree
 vim.api.nvim_create_autocmd("BufEnter", {
@@ -134,3 +146,43 @@ vim.api.nvim_create_user_command("GoFix", function()
 	vim.diagnostic.setqflist() -- Envía errores a la lista quickfix
 	print("🛠️ Formateo aplicado y diagnósticos actualizados.")
 end, { desc = "Formatea el buffer y revisa errores" })
+
+-- ==========================================================================
+-- EJECUTOR RÁPIDO DE GO (Terminal Flotante)
+-- ==========================================================================
+local function run_go_project()
+	-- Guardamos el archivo actual antes de correr (evita correr código viejo)
+	vim.cmd("silent! write")
+
+	-- Verificamos si existe un go.mod para asegurarnos que es un proyecto Go
+	if vim.fn.filereadable("go.mod") == 1 or vim.bo.filetype == "go" then
+		-- Usamos ToggleTerm para lanzar el comando en una terminal flotante
+		-- "go run ." corre todo el paquete actual
+		vim.cmd('TermExec cmd="go run ." direction=float')
+	else
+		print("❌ No se detectó un proyecto Go o archivo .go")
+	end
+end
+
+-- Creamos el mapeo: <leader>rr (Run Root)
+vim.keymap.set("n", "<leader>rr", run_go_project, { desc = "Ejecutar Proyecto Go" })
+
+-- Limpiar automáticamente los ^M al pegar o guardar
+vim.api.nvim_create_autocmd({ "BufWritePre", "BufReadPost" }, {
+	pattern = "*",
+	callback = function()
+		local save_cursor = vim.fn.getpos(".")
+		vim.cmd([[%s/\r$//e]])
+		vim.fn.setpos(".", save_cursor)
+	end,
+})
+
+-- Activar Inlay Hints automáticamente (v0.11+)
+vim.api.nvim_create_autocmd("LspAttach", {
+	callback = function(args)
+		local client = vim.lsp.get_client_by_id(args.data.client_id)
+		if client and client.server_capabilities.inlayHintProvider then
+			vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
+		end
+	end,
+})

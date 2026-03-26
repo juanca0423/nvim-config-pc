@@ -4,17 +4,27 @@ local function conf()
 
 	dapui.setup()
 
-	-- 1. CONFIGURACIÓN PARA NODE.JS (Windows - Adaptado para lanzar procesos)
+	-- 1. CONFIGURACIÓN PARA NODE.JS / REACT
 	dap.adapters["pwa-node"] = {
 		type = "executable",
 		command = "node",
 		args = {
-			vim.fn.expand("$LOCALAPPDATA/nvim-data/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js"),
+			-- Mason en Windows suele usar esta estructura exacta
+			vim.fn.expand("$LOCALAPPDATA/nvim-data/mason/packages/js-debug-adapter/js-debug/out/src/dapDebugServer.js"),
 			"${port}",
 		},
 	}
 
-	-- Configuración de lanzamiento para JS/TS
+	-- Configuración para Chrome (Para debugear React mientras ves el navegador)
+	dap.adapters["pwa-chrome"] = {
+		type = "executable",
+		command = "node",
+		args = {
+			vim.fn.expand("$LOCALAPPDATA/nvim-data/mason/packages/js-debug-adapter/js-debug/out/src/dapDebugServer.js"),
+			"${port}",
+		},
+	}
+	-- Esto cubre archivos .js, .ts y .tsx
 	dap.configurations.javascript = {
 		{
 			type = "pwa-node",
@@ -33,6 +43,21 @@ local function conf()
 			initialize_timeout_sec = 20,
 		},
 	})
+
+	local react_config = {
+		{
+			type = "pwa-chrome",
+			request = "launch",
+			name = "Launch Chrome against localhost",
+			url = "http://localhost:5173", -- Ajusta al puerto de tu Vite o Create React App
+			webRoot = "${workspaceFolder}",
+			userDataDir = "${workspaceFolder}/.vscode/vscode-chrome-debug-userdatadir",
+		},
+	}
+
+	-- Configuración de lanzamiento para JS/TS
+	dap.configurations.typescriptreact = react_config
+	dap.configurations.javascriptreact = react_config
 
 	-- 3. ESTÉTICA DE BREAKPOINTS
 	vim.fn.sign_define("DapBreakpoint", { text = "󰏃 ", texthl = "DiagnosticError" })

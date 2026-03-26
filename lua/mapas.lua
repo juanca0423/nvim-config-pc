@@ -56,6 +56,7 @@ vim.keymap.set("n", "gi", vim.lsp.buf.implementation, { desc = "Implementación"
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Ir a Definición" })
 vim.keymap.set("n", "gr", vim.lsp.buf.references, { desc = "Ver Referencias" })
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Info Hover" })
+vim.keymap.set("n", "<leader>d", vim.diagnostic.open_float, { desc = "LSP: Ver error en ventana flotante" })
 
 -- Snippets (Salto con J y K)
 vim.keymap.set({ "i", "s" }, "<C-k>", function()
@@ -184,6 +185,8 @@ vim.keymap.set("n", "<leader>h", "<cmd>Telescope yank_history<CR>", { desc = "Hi
 vim.keymap.set("n", "<leader>td", "<cmd>TodoTelescope<CR>", { desc = "Buscar TODOs" })
 vim.keymap.set("n", "<leader>fs", tb.lsp_document_symbols, { desc = "Símbolos del Archivo" })
 vim.keymap.set("n", "<leader>fS", tb.lsp_dynamic_workspace_symbols, { desc = "Símbolos del Proyecto" })
+-- Abrir lista de proyectos con Telescope
+vim.keymap.set("n", "<leader>fp", ":Telescope projects<CR>", { desc = "Buscar Proyectos" })
 
 -- =============================================================================
 -- ADMIN Y CONFIG
@@ -191,10 +194,21 @@ vim.keymap.set("n", "<leader>fS", tb.lsp_dynamic_workspace_symbols, { desc = "S�
 vim.keymap.set("n", "<leader>sv", "<cmd>source $MYVIMRC<CR>", { desc = "Recargar Config" })
 
 vim.keymap.set("n", "<leader>cl", "<cmd>ClearNvim<CR>", { desc = "Limpiar Caché" })
-
+-- ===============================================
+-- Formatear
+-- ===============================================
 vim.keymap.set("n", "<leader>f", function()
 	require("conform").format({ async = true, lsp_fallback = true })
 end, { desc = "Formatear Buffer (Manual)" })
+
+-- Formatear SQL automáticamente (necesita conform.nvim que agregamos antes)
+vim.keymap.set("n", "<leader>sf", function()
+	require("conform").format({ bufnr = 0 })
+	print("✨ SQL Formateado")
+end, { desc = "Formatear archivo SQL" })
+-- ===============================================
+-- CHEATSHEET
+-- ===============================================
 
 vim.keymap.set("n", "<leader>.", function()
 	local path = vim.fn.stdpath("config") .. "/CHEATSHEET.md"
@@ -208,3 +222,40 @@ vim.keymap.set("n", "<leader>ud", function()
 	os.remove(path)
 	print("🗑️ Guía borrada. Reinicia Neovim para actualizarla.")
 end, { desc = "Update Cheatsheet" })
+
+-- Función para crear una ventana flotante de ayuda
+local function open_floating_help()
+	local word = vim.fn.expand("<cword>")
+	local buf = vim.api.nvim_create_buf(false, true)
+
+	-- Configuración de la ventana (centrada)
+	local opts = {
+		relative = "editor",
+		width = math.ceil(vim.o.columns * 0.7),
+		height = math.ceil(vim.o.lines * 0.7),
+		col = math.ceil(vim.o.columns * 0.15),
+		row = math.ceil(vim.o.lines * 0.15),
+		style = "minimal",
+		border = "rounded",
+	}
+
+	vim.api.nvim_open_win(buf, true, opts)
+
+	-- Lógica inteligente de búsqueda
+	if vim.bo.filetype == "go" then
+		vim.cmd("terminal go doc " .. word)
+	elseif vim.bo.filetype == "sql" then
+		-- Para SQL te da una opción de búsqueda rápida en web
+		print("¿Buscar '" .. word .. "' en Google? (s/n)")
+		local char = vim.fn.getcharstr()
+		if char == "s" then
+			local url = "https://www.google.com/search?q=postgresql+sql+" .. word
+			os.execute("start " .. url) -- Comando específico para Windows
+			vim.api.nvim_win_close(0, true)
+		end
+	else
+		vim.cmd("help " .. word)
+	end
+end
+
+vim.keymap.set("n", "<leader>he", open_floating_help, { desc = "Ayuda Flotante Pro" })

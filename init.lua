@@ -1,49 +1,43 @@
--- vim.g.netrw_liststyle = 3
--- 0. CONFIGURACIÓN INICIAL
-vim.g.mapleader = ","
-
--- SOLUCIÓN PARA TREESITTER (Runtimepath) - Versión Robusta para Windows
-local parser_install_dir = vim.fn.stdpath("data") .. "/site"
--- Normalizamos la ruta: cambiamos \ por / y quitamos duplicadas
-parser_install_dir = parser_install_dir:gsub("\\", "/")
-
--- Agregamos al runtimepath de forma explícita
-vim.opt.runtimepath:prepend(parser_install_dir)
-
--- Verificación manual para tu tranquilidad (puedes borrar este print después)
--- print("RTP Actualizado: " .. parser_install_dir)
-
-if vim.fn.isdirectory(parser_install_dir) == 0 then
-	vim.fn.mkdir(parser_install_dir, "p")
-end
-
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
--- Indicarle a Neovim dónde está Node (Evita el warning de checkhealth)
-vim.g.node_host_prog = vim.fn.expand("$APPDATA/npm/node_modules/neovim/bin/cli.js")
-
--- 1. OPCIONES BÁSICAS (Cargar antes que nada)
-require("opciones")
-
--- 2. SHELL Y PROVIDERS (Windows)
+-- Silenciar avisos de funciones obsoletas (Deprecations)
+vim.g.deprecation_warnings = false
 if vim.fn.has("win32") == 1 then
-	vim.opt.shell = "pwsh.exe"
+	vim.opt.shell = vim.fn.executable("pwsh") == 1 and "pwsh" or "powershell"
+	-- ESTA LÍNEA ES EL ESCUDO:
 	vim.opt.shellcmdflag =
-		"-NoLogo -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
-	vim.opt.shellredir = "-RedirectStandardOutput %s -NoNewWindow -Wait"
-	vim.opt.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s"
+		"-NoLogo -NoProfile -ExecutionPolicy RemoteSigned -Command [Console]::InputEncoding=[Console]::OutputEncoding=[System.Text.Encoding]::UTF8;"
+	vim.opt.shellredir = "-RedirectStandardOutput %s -NoNewWindow"
+	vim.opt.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
 	vim.opt.shellquote = ""
 	vim.opt.shellxquote = ""
-	-- Desactivar python/ruby si no los usas para ganar velocidad
-	vim.g.python3_host_prog = nil
-	vim.g.python3_host_prog = vim.fn.expand("$LOCALAPPDATA/Python/bin/python3.EXE")
-	vim.g.loaded_ruby_provider = 0
-	vim.g.loaded_perl_provider = 0
 end
--- 3. GESTIÓN DE PLUGINS (Lazy.nvim)
+
+-- 0. CODIFICACIÓN Y LEADER (Debe ir al puro principio)
+vim.g.mapleader = ","
+vim.opt.encoding = "utf-8"
+vim.opt.fileencoding = "utf-8"
+vim.scriptencoding = "utf-8"
+-- 1. SOLUCIÓN PARA TREESITTER (Runtimepath)
+local data_path = vim.fn.stdpath("data"):gsub("\\", "/")
+local site_path = data_path .. "/site"
+
+if not vim.tbl_contains(vim.opt.rtp:get(), site_path) then
+	vim.opt.rtp:append(site_path)
+end
+
+-- 2. PROVIDERS Y RUTA DE NODE
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+vim.g.node_host_prog = vim.fn.expand("$APPDATA/npm/node_modules/neovim/bin/cli.js")
+
+-- 3. CARGAR OPCIONES (Tus 2 espacios y diagnósticos)
+local ok_opts, _ = pcall(require, "opciones")
+if not ok_opts then
+	print("⚠️ No se encontró lua/opciones.lua")
+end
+
+-- 4. INSTALACIÓN DE LAZY.NVIM
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
+if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
@@ -55,37 +49,53 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup("plugins", {
+-- 5. CONFIGURACIÓN DE LAZY (Estructura Corregida)
+require("lazy").setup({
+	spec = {
+		{ import = "plugins" }, -- Esto asume que tienes una carpeta lua/plugins/
+	},
+	ui = {
+		icons = {
+			cmd = "⌘",
+			config = "🛠",
+			event = "📅",
+			ft = "📂",
+			init = "⚙",
+			keys = "🗝",
+			plugin = "🔌",
+			runtime = "💻",
+			require = "🌙",
+			source = "📄",
+			start = "🚀",
+			task = "📌",
+			lazy = "💤 ",
+		},
+	},
 	rocks = { enabled = false },
-	performance = { cache = { enabled = true } },
+	performance = {
+		cache = { enabled = true },
+	},
 })
 
--- 4. CARGA DE CONFIGURACIONES RESTANTES
-require("mapas")
-require("config.autocomandos")
-require("config.generate_cheatsheet").setup() -- Llamamos al generador
+-- 6. CARGAR MAPAS Y AUTOCOMANDOS
+pcall(require, "mapas")
+pcall(require, "config.autocomandos")
 
--- 5. CORRECCIONES ESTÉTICAS FINALES
+-- Cheatsheet
+pcall(function()
+	require("config.generate_cheatsheet").setup()
+end)
+
+-- 7. ESTÉTICA FINAL
 vim.cmd("highlight CursorLineNr guifg=#FAB387 gui=bold")
--- 3. ESTÉTICA RÁPIDA (Solo highlights)
--- Ajuste estético para Treesitter Context
-vim.api.nvim_set_hl(0, "TreesitterContext", { bg = "#1e1e2e" }) -- Fondo Mocha
+vim.api.nvim_set_hl(0, "TreesitterContext", { bg = "#1e1e2e" })
 vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { fg = "#F9E2AF", bg = "#1e1e2e" })
 
--- Limpiador de buffers vacíos al inicio (Para que Alpha quede solo)
-vim.api.nvim_create_autocmd("VimEnter", {
+-- Auto-refresh Lualine
+vim.api.nvim_create_autocmd("BufEnter", {
 	callback = function()
-		if vim.fn.argc() == 0 then
-			vim.schedule(function()
-				local bufs = vim.api.nvim_list_bufs()
-				for _, buf in ipairs(bufs) do
-					if vim.bo[buf].filetype ~= "alpha" and vim.api.nvim_buf_get_name(buf) == "" then
-						pcall(vim.api.nvim_buf_delete, buf, { force = true })
-					end
-				end
-			end)
+		if vim.bo.filetype ~= "alpha" then
+			pcall(require("lualine").refresh)
 		end
 	end,
 })
-
--- Números amarillos

@@ -26,6 +26,24 @@
 | `:GoFix` | 🛠️ Formatear y ver Errores | Utilidad |
 | `<leader>gt` | 🐹 Debugger para Tests | DAP Go |
 | `<leader>hb` | 🕰️ Ver quién escribió la línea | Git Blame |
+| `<leader>rr' | 🚀 Ejecutar Proyecto (go run .) | Go / Backend|
+| `<leader>tf` | 🖥️ Abrir Terminal Flotante | Terminal|
+| `<leader>th` | 📏 Abrir Terminal Horizontal |Terminal|
+
+### 🚀 Jerarquía de Teclas Rápidas (Flechas)
+| Combinación | Acción | Categoría |
+| :--- | :--- | :--- |
+| **`Ctrl + ⬆️/⬇️/⬅️/➡️`** | 🪟 Moverse entre ventanas | Navegación |
+| **`Alt + ⬆️/⬇️/⬅️/➡️`** | 📏 Cambiar tamaño (Resize) | Layout |
+| **`Shift + ⬆️/⬇️`** | 👥 Añadir cursor (Arriba/Abajo) | Multi-Cursor |
+
+### 🔍 Edición con Multi-Cursores (VVM)
+| Atajo | Acción | Plugin |
+| :--- | :--- | :--- |
+| `Ctrl + n` | 🔍 Seleccionar siguiente palabra igual | Visual-Multi |
+| `Ctrl + a` | 📑 Seleccionar TODAS las ocurrencias | Visual-Multi |
+| `q` | ⏭️ Saltar (skip) la ocurrencia actual | Visual-Multi |
+| `Esc Esc` | 🚪 Salir totalmente al modo normal | Visual-Multi |
 
 ### 🪟 Gestión de Ventanas (Layout)
 | Atajo | Acción | Teclas |

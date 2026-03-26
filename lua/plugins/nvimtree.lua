@@ -45,7 +45,11 @@ return {
 			},
 			renderer = {
 				indent_markers = { enable = true },
+				highlight_git = true, -- Colorea el nombre del archivo si hay cambios
 				icons = {
+					show = {
+						git = true, -- Muestra el icono de git (modificado, nuevo, etc)
+					},
 					glyphs = {
 						default = "󰈚",
 						symlink = "",
