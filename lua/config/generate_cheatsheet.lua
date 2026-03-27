@@ -16,7 +16,7 @@ function M.setup()
 ### 🚀 Navegación y Buffers
 | Atajo | Acción | Contexto |
 | :--- | :--- | :--- |
-| `<C-t>` | 📂 Abrir/Cerrar Explorador | Nvim-Tree |
+| `<C-t>` | 📂 Abrir/Cerrar Explorador | Explorador |
 | `Tab / S-Tab` | ➡️ Siguiente / Anterior pestaña | Bufferline |
 | `<leader>ba` | 🧹 Cerrar los demás buffers | Limpieza |
 | `<leader>q` | ❌ Cerrar buffer actual | General |
@@ -89,8 +89,6 @@ function M.setup()
 | `<leader>gt` | 🐹 Debugger para Test en Go | DAP Go |
 | `<leader>xx` | 🚩 Trouble: Ver lista de errores | Trouble |
 | `K` | 📖 Ver documentación (Hover) | LSP |
-| `<leader>tn` | Ejecutar Test cercano | Vim-Test |
-| `<leader>tf` | Ejecutar Test del archivo | Vim-Test |
 |`<leader>e`|Ver Error flotante||
 |`<leader>v`|Toggle Texto Virtual||
 |`<leader>v`| Toggle Texto Virtual (Errores) | Diagnósticos |

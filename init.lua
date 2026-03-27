@@ -9,6 +9,8 @@ if vim.fn.has("win32") == 1 then
 	vim.opt.shellpipe = "2>&1 | Out-File -Encoding UTF8 %s; exit $LastExitCode"
 	vim.opt.shellquote = ""
 	vim.opt.shellxquote = ""
+	-- Permitir que Neovim abra enlaces con 'gx' en Windows
+	vim.g.netrw_browsex_viewer = "cmd /c start"
 end
 
 -- 0. CODIFICACIÓN Y LEADER (Debe ir al puro principio)
@@ -25,8 +27,8 @@ if not vim.tbl_contains(vim.opt.rtp:get(), site_path) then
 end
 
 -- 2. PROVIDERS Y RUTA DE NODE
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
+-- vim.g.loaded_netrw = 1
+-- vim.g.loaded_netrwPlugin = 1
 vim.g.node_host_prog = vim.fn.expand("$APPDATA/npm/node_modules/neovim/bin/cli.js")
 
 -- 3. CARGAR OPCIONES (Tus 2 espacios y diagnósticos)

@@ -27,7 +27,7 @@ end
 -- NAVEGACIÓN Y ARCHIVOS
 -- =============================================================================
 vim.keymap.set("n", "<leader>w", "<cmd>w<CR>", { desc = "Guardar" })
-vim.keymap.set("n", "<leader>aa", "<cmd>Alpha<cr>", { desc = "Inicio" })
+-- vim.keymap.set("n", "<leader>aa", "<cmd>Alpha<cr>", { desc = "Inicio" })
 vim.keymap.set("n", "<leader>q", "<cmd>bd<cr>", { desc = "Cerrar Buffer" }) -- Simplificado
 
 -- Limpieza de Buffers (Tu favorita)
@@ -43,6 +43,17 @@ vim.keymap.set("n", "<leader>ba", function()
 	end
 	print("🧹 Buffers limpios: " .. count)
 end, { desc = "Limpiar otros buffers" })
+
+-- Copiar la ruta del archivo actual al portapapeles de Windows
+vim.keymap.set("n", "<leader>cp", '<cmd>let @+ = expand("%:p")<cr>', { desc = "Copiar ruta completa" })
+
+-- Abrir el navegador en el puerto de desarrollo local
+vim.keymap.set(
+	"n",
+	"<leader>wb",
+	"<cmd>silent execute '!start http://localhost:8080'<cr>",
+	{ desc = "Abrir Localhost" }
+)
 
 -- Ventanas
 vim.keymap.set("n", "<leader>zm", toggle_maximize, { desc = "Zen Maximize" })
@@ -142,18 +153,6 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- =============================================================================
--- CONFIGURACIÓN DE DEPENDENCIAS (Lazy loading friendly)
--- =============================================================================
-local function toggle_tree()
-	local ok, api = pcall(require, "nvim-tree.api")
-	if ok then
-		api.tree.toggle({ focus = true, find_file = true })
-	else
-		print("NvimTree no cargado")
-	end
-end
-
--- =============================================================================
 -- VENTANAS Y NAVEGACIÓN (Layout)
 -- =============================================================================
 -- Moverse (Ctrl + Flechas)
@@ -171,7 +170,6 @@ vim.keymap.set("n", "<M-Up>", "<cmd>resize -5<CR>")
 -- Control de Layout
 vim.keymap.set("n", "<leader>m", "<C-w>|<C-w>_", { desc = "Maximizar" })
 vim.keymap.set("n", "<leader>=", "<C-w>=", { desc = "Igualar ventanas" })
-vim.keymap.set("n", "<C-t>", toggle_tree, { desc = "Explorador de Archivos" })
 
 -- =============================================================================
 -- TELESCOPE (Buscadores)

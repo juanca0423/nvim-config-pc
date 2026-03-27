@@ -14,7 +14,7 @@ return {
 
 		require("mason").setup()
 		require("mason-lspconfig").setup({
-			ensure_installed = { "gopls", "lua_ls", "ts_ls", "html", "sqls" },
+			ensure_installed = { "gopls", "lua_ls", "ts_ls", "html", "sqls", "glimmer" },
 		})
 
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
@@ -87,11 +87,11 @@ return {
 				require("lspconfig")[server].setup(opts)
 			end
 		end
-		-- 1. Asegurar que Neovim vea los .hbs como HTML (Para resaltado de sintaxis)
+		-- Cambiamos el tipo de archivo a handlebars para que Glimmer se active
 		vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 			pattern = "*.hbs",
 			callback = function()
-				vim.bo.filetype = "html"
+				vim.bo.filetype = "handlebars"
 			end,
 		})
 

@@ -71,7 +71,7 @@ Set-Alias v nvim
 function conf { v $PROFILE }
 function guia { v "$rutaProyectos\DocMd\Github.md" }
 
-
+function open { start $args } # Abrir una web: open https://google.com o Abrir un archivo HTML local: open .\index.html
 
 # Tu función ll ahora usará los iconos si el módulo cargó bien
 function ll {

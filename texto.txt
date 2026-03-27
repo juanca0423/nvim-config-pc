@@ -1,3 +1,4 @@
+--[[
 return {
 	"goolord/alpha-nvim",
 	lazy = false,
@@ -55,3 +56,23 @@ return {
 		})
 	end,
 }
+--]]
+
+-- Si cerramos el último buffer, abrir Alpha (Dashboard) automáticamente
+vim.api.nvim_create_autocmd("BufDelete", {
+	group = augroup("alpha_auto_open"),
+	callback = function()
+		vim.schedule(function()
+			local bufs = vim.api.nvim_list_bufs()
+			local loaded_bufs = 0
+			for _, buf in ipairs(bufs) do
+				if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then
+					loaded_bufs = loaded_bufs + 1
+				end
+			end
+			if loaded_bufs == 0 then
+				pcall(vim.cmd, "Alpha")
+			end
+		end)
+	end,
+})

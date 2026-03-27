@@ -11,13 +11,30 @@ return {
 			-- Metemos tus colores aquí para que se compilen con el tema
 			custom_highlights = function(colors)
 				return {
-					CursorLineNr = { fg = colors.peach, bold = true }, -- #FAB387 es 'peach'
-					LineNr = { fg = colors.yellow }, -- #F9E2AF es 'yellow'
-					FoldColumn = { fg = colors.blue, bold = true }, -- #89B4FA es 'blue'
+					CursorLineNr = { fg = colors.peach, bold = true },
+					LineNr = { fg = colors.yellow },
+					FoldColumn = { fg = colors.blue, bold = true },
 					SignColumn = { bg = "none" },
+
+					-- ✅ Colores del Dashboard de Snacks.nvim
+					-- Usamos nombres que Snacks reconoce por defecto para el dashboard
+					SnacksDashboardKey = { fg = colors.red, bold = true },
+					SnacksDashboardDesc = { fg = colors.subtext1 },
+					SnacksDashboardHeader = { fg = colors.blue },
+					SnacksDashboardFooter = { fg = colors.yellow },
+
+					-- Y creamos estos para usarlos en tus botones individuales
+					DashboardC = { fg = colors.sky },
+					DashboardG = { fg = colors.green },
+					DashboardY = { fg = colors.yellow },
+					DashboardP = { fg = colors.mauve },
+					DashboardO = { fg = colors.peach },
+					DashboardB = { fg = colors.blue },
+					DashboardR = { fg = colors.red },
 				}
 			end,
 			integrations = {
+				snacks = true,
 				bufferline = true,
 				nvimtree = true,
 				treesitter = true,

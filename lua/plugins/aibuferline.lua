@@ -1,43 +1,51 @@
 return {
 	"akinsho/bufferline.nvim",
 	version = "*",
-	dependencies = "nvim-tree/nvim-web-devicons",
-	-- Cambiamos a un evento que asegure que Alpha ya se dibujó
-	event = "BufReadPost",
+	event = "VeryLazy", -- Cambiamos a VeryLazy para evitar conflictos de carga
 	opts = {
 		options = {
 			mode = "buffers",
+			-- Cambiamos esto por la forma nativa que usa nvim-web-devicons
+			show_buffer_icons = true,
+
+			-- ELIMINAMOS get_element_icon para que use el default que sí funciona
+			-- Bufferline ya sabe buscar los iconos si tienes nvim-web-devicons instalado
+
 			separator_style = "slant",
 			show_buffer_close_icons = true,
 			show_close_icon = false,
 			diagnostics = "nvim_lsp",
-			-- PROTECCIÓN: Ignorar buffers que no son archivos (Alpha, Dashboard)
+
 			offsets = {
 				{
-					filetype = "NvimTree",
-					text = "EXPLORADOR",
+					filetype = "snacks_explorer",
+					text = " EXPLORADOR ",
 					text_align = "left",
 					separator = true,
 				},
 			},
-			-- Evita que bufferline intente mostrar buffers "fantasma" como el de Yanky
+			-- ... resto de tu custom_filter igual
+
 			custom_filter = function(buf_number)
 				local ft = vim.bo[buf_number].filetype
-				if ft == "alpha" or ft == "dashboard" or ft == "yanky" then
-					return false
-				end
-				return true
+				local exclude = {
+					["alpha"] = true,
+					["dashboard"] = true,
+					["snacks_dashboard"] = true,
+					["yanky"] = true,
+					["lazy"] = true,
+				}
+				return not exclude[ft]
 			end,
 		},
 	},
 	config = function(_, opts)
 		require("bufferline").setup(opts)
 
-		-- ATAJOS PARA TUS BUFFERS
-		vim.keymap.set("n", "<Tab>", "<cmd>BufferLineCycleNext<cr>", { desc = "Siguiente Buffer" })
-		vim.keymap.set("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>", { desc = "Anterior Buffer" })
-		-- Cambiamos bdelete por uno más seguro que no rompa el layout
-		vim.keymap.set("n", "<leader>q", "<cmd>bp|sp|bn|bd<cr>", { desc = "Cerrar Buffer sin romper split" })
-		vim.keymap.set("n", "<leader>bc", "<cmd>BufferLinePickClose<cr>", { desc = "Elegir cerrar" })
+		-- Mapeos rápidos
+		vim.keymap.set("n", "<Tab>", "<cmd>BufferLineCycleNext<cr>")
+		vim.keymap.set("n", "<S-Tab>", "<cmd>BufferLineCyclePrev<cr>")
+		-- Cerrar buffer sin romper la interfaz
+		vim.keymap.set("n", "<leader>q", "<cmd>bp|bd #<cr>", { desc = "Cerrar Buffer" })
 	end,
 }

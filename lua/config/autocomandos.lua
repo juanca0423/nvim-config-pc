@@ -62,36 +62,6 @@ vim.api.nvim_create_autocmd("BufEnter", {
 		end
 	end,
 })
--- 4. COMPORTAMIENTO DE INTERFAZ
--- Cerrar Neovim si el único buffer que queda es Nvim-Tree
-vim.api.nvim_create_autocmd("BufEnter", {
-	group = augroup("nvim_tree_close"),
-	nested = true,
-	callback = function()
-		if #vim.api.nvim_list_wins() == 1 and vim.api.nvim_buf_get_name(0):match("NvimTree_") ~= nil then
-			vim.cmd("quit")
-		end
-	end,
-})
-
--- Si cerramos el último buffer, abrir Alpha (Dashboard) automáticamente
-vim.api.nvim_create_autocmd("BufDelete", {
-	group = augroup("alpha_auto_open"),
-	callback = function()
-		vim.schedule(function()
-			local bufs = vim.api.nvim_list_bufs()
-			local loaded_bufs = 0
-			for _, buf in ipairs(bufs) do
-				if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then
-					loaded_bufs = loaded_bufs + 1
-				end
-			end
-			if loaded_bufs == 0 then
-				pcall(vim.cmd, "Alpha")
-			end
-		end)
-	end,
-})
 
 -- 5. AJUSTES DE TERMINAL
 -- Quitar números de línea y entrar en modo inserto automáticamente en la terminal

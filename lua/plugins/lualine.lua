@@ -6,14 +6,10 @@ local function harpoon_status()
 	end
 
 	local list = harpoon:list()
-	if not list then
-		return ""
-	end
-
-	local marks = list.items
+	-- Normalizamos rutas para evitar el error de la doble barra en Windows
 	local current_file_path = vim.fn.expand("%:p:."):gsub("\\", "/")
 
-	for i, item in ipairs(marks) do
+	for i, item in ipairs(list.items) do
 		if item.value:gsub("\\", "/") == current_file_path then
 			return "󰛢 " .. i
 		end
@@ -23,11 +19,11 @@ end
 
 return {
 	"nvim-lualine/lualine.nvim",
-	-- IMPORTANTE: Cambiamos de "VeryLazy" a un evento que no choque con el inicio de Alpha
 	event = "BufReadPost",
-	dependencies = { "ThePrimeagen/harpoon", "catppuccin/nvim" },
+	-- ELIMINADO: nvim-web-devicons ya no es necesario por Snacks
+	dependencies = { "ThePrimeagen/harpoon" },
 	config = function()
-		local status_cat, catppuccin = pcall(require, "catppuccin")
+		local status_cat, _ = pcall(require, "catppuccin")
 		local my_theme = "auto"
 
 		if status_cat then
@@ -48,10 +44,12 @@ return {
 		require("lualine").setup({
 			options = {
 				theme = my_theme,
-				globalstatus = true, -- Mantenemos esto porque es genial, pero...
+				globalstatus = true,
+				icons_enabled = true,
 				disabled_filetypes = {
-					statusline = { "alpha", "NvimTree", "dashboard" }, -- ¡ESTO ES LA CLAVE!
-					winbar = { "alpha", "NvimTree" },
+					-- ACTUALIZADO: Quitamos NvimTree y añadimos los de Snacks
+					statusline = { "alpha", "dashboard", "snacks_dashboard", "snacks_explorer" },
+					winbar = { "alpha", "dashboard", "snacks_dashboard", "snacks_explorer" },
 				},
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },

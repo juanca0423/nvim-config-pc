@@ -53,6 +53,13 @@ Primero, configura la variable en Windows (PowerShell):
 [System.Environment]::SetEnvironmentVariable('DB_PASS_EEFF', 'tu_password_real', 'User')
 ```
 
+## Dependencias Externas (Windows - Winget)
+Para que Snacks y el entorno funcionen al 100%:
+- `winget install jesseduffield.lazygit` (Gestión de Git)
+- `winget install ImageMagick.ImageMagick` (Previsualización de imágenes)
+- `winget install sharkdp.fd` (Buscador rápido de archivos)
+- `winget install BurntSushi.ripgrep` (Buscador de texto)
+
 ## 8. Cómo ejecutar el Script de Instalación
 En Windows, por seguridad, la ejecución de scripts está restringida por defecto. Para correr tu install_everything.ps1, el comando que debes usar en una terminal de PowerShell como Administrador es:
 
@@ -92,13 +99,19 @@ sqls = {
 Una vez instalado todo el software base del script `.ps1`, abre Neovim y ejecuta:
 
 1. **Instalar Plugins:**
-   `:Lazy sync`
+   ```Nvim 
+   :Lazy sync
+   ```
 
 2. **Instalar Inteligencia (LSP/Formatters):**
-   `:MasonInstall gopls gofumpt goimports golines sqls stylua lua-language-server tailwindcss-language-server typescript-language-server eslint-lsp prettierd debugpy delve`
+   ```Nvim
+   :MasonInstall gopls gofumpt goimports golines sqls stylua lua-language-server tailwindcss-language-server typescript-language-server eslint-lsp prettierd debugpy delve
+   ```
 
 3. **Instalar Resaltado (Treesitter):**
-   `:TSInstall go gomod gowork gotmpl sql lua python javascript typescript html css markdown markdown_inline json`
+   ```Nvim
+   :TSInstall go gomod gowork gotmpl sql lua python javascript typescript html css markdown markdown_inline json regex
+   ```
 
 4. **Compilar JSRegexp (Para Snippets):**
 
