@@ -14,11 +14,13 @@ return {
 
 		require("mason").setup()
 		require("mason-lspconfig").setup({
-			ensure_installed = { "gopls", "lua_ls", "ts_ls", "html", "sqls", "glimmer" },
+			ensure_installed = { "gopls", "lua_ls", "ts_ls", "html", "sqls", "powershell-editor-services" },
 		})
 
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
-		local servers = { "lua_ls", "gopls", "ts_ls", "html", "cssls", "sqls" }
+		-- Esto quita el aviso molesto de "position encoding"
+		capabilities.offsetEncoding = { "utf-16" }
+		local servers = { "lua_ls", "gopls", "ts_ls", "html", "cssls", "sqls", "powershell_editor_services" }
 
 		for _, server in ipairs(servers) do
 			local opts = { capabilities = capabilities }
@@ -37,6 +39,16 @@ return {
 							assignVariableTypes = true,
 							compositeLiteralFields = true,
 							parameterNames = true,
+						},
+					},
+				}
+			elseif server == "powershell_editor_services" then
+				opts.settings = {
+					powershell = {
+						scriptAnalysis = {
+							enable = true,
+							-- Pon la ruta completa a tu archivo de configuración
+							settingsPath = "C:/Users/Usuario/Documents/DevDashboard/PSScriptAnalyzerSettings.psd1",
 						},
 					},
 				}
@@ -87,22 +99,9 @@ return {
 				require("lspconfig")[server].setup(opts)
 			end
 		end
-		-- Cambiamos el tipo de archivo a handlebars para que Glimmer se active
-		vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-			pattern = "*.hbs",
-			callback = function()
-				vim.bo.filetype = "handlebars"
-			end,
-		})
-
 		-- Auto-comando unificado SOLO para lo que el LSP debe hacer (Imports)
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			pattern = "*.go",
-			callback = function()
-				-- Conform ya formatea, así que aquí SOLO organizamos imports
-				vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" } }, apply = true })
-			end,
-		})
+		-- Reemplaza tu autocmd de Go por este:
+
 		-- 1. Definimos los iconos (Nerd Fonts)
 		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
 

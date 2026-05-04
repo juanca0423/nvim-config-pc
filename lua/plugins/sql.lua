@@ -1,16 +1,5 @@
 return {
 	{
-		-- Este es el estándar, el otro tenía el link roto
-		"ahmedkhalf/project.nvim",
-		config = function()
-			require("project_nvim").setup({
-				-- Detecta la raíz de tu proyecto buscando el .git o go.mod
-				detection_methods = { "lsp", "pattern" },
-				patterns = { ".git", "go.mod", "Makefile", "package.json" },
-			})
-		end,
-	},
-	{
 		"mfussenegger/nvim-lint",
 		event = { "BufReadPost", "BufNewFile" },
 		config = function()

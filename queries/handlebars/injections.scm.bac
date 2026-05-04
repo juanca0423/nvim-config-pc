@@ -1,0 +1,12 @@
+; extends
+
+; Buscamos los bloques de texto para tratarlos como HTML
+(text) @injection.content
+(#set! injection.language "html")
+
+; Buscamos las expresiones entre llaves para tratarlas como Glimmer (Handlebars)
+(mustache_statement) @injection.content
+(#set! injection.language "glimmer")
+
+(block_statement) @injection.content
+(#set! injection.language "glimmer")

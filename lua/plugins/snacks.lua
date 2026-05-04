@@ -7,15 +7,21 @@ return {
 	opts = {
 		-- Desactiva lo que no usas para limpiar el reporte de errores
 		image = { enabled = false },
+		indent = { enabled = false },
+		input = { enabled = false },
+		scope = { enabled = false },
+		scroll = { enabled = false },
+		words = { enabled = false },
+		debug = { enabled = false },
 		terminal = { enabled = true }, -- Este sí déjalo para tu consola de Go
 		bigfile = { enabled = true },
 		-- 1. DASHBOARD (Tu logo y botones)
 		dashboard = {
+			animate = { enabled = true },
 			enabled = true,
 			sections = {
 				{ section = "header" },
-				{ section = "keys", title = "Botonera", gap = 0, padding = 1 },
-				{ icon = " ", title = "Proyectos de Go", section = "projects", indent = 2, padding = 1 },
+				{ section = "keys" },
 				{ section = "startup" },
 			},
 			preset = {
@@ -31,6 +37,7 @@ return {
     GO • JS • HTML • CSS STACK]],
 				keys = {
 					{
+						{ title = "Botonera", indent = 4, gap = 0, padding = 1 },
 						icon = " ",
 						key = "f",
 						desc = "Buscar Archivo",
@@ -43,12 +50,18 @@ return {
 						desc = "Buscar Texto",
 						action = ":lua Snacks.dashboard.pick('live_grep')",
 					},
+					{ icon = "󰉋 ", key = "p", desc = "Mis Proyectos", action = ":lua Snacks.picker.projects()" },
+					-- Añadir en preset.keys
 					{
-						icon = " ",
-						key = "r",
-						desc = "Recientes",
-						action = ":lua Snacks.dashboard.pick('oldfiles')",
+						icon = "󰆼 ",
+						key = "s",
+						desc = "Bases de Datos (SQL)",
+						action = function()
+							Snacks.picker.files({ cwd = "C:/Users/Usuario/Documents/Desarrollo/Database" })
+						end,
 					},
+					{ icon = " ", key = "m", desc = "Documentos md", action = ":OpenDocs" },
+					{ icon = " ", key = "r", desc = "Recientes", action = ":lua Snacks.dashboard.pick('oldfiles')" },
 					{
 						icon = " ",
 						key = "c",
@@ -57,10 +70,41 @@ return {
 					},
 					{ icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy" },
 					{ icon = " ", key = "q", desc = "Salir", action = ":qa" },
+					{ title = "Documentación y Enlaces", indent = 4, gap = 0, padding = 1 }, -- Título de la nueva sección
+					{
+						icon = "󰟓 ",
+						key = "G",
+						desc = "Go Packages & Docs",
+						action = function()
+							vim.ui.open("https://pkg.go.dev/")
+						end,
+					},
+					{
+						icon = "󰙯 ",
+						key = "v",
+						desc = "Neovim Docs",
+						action = function()
+							vim.ui.open("https://neovim.io/doc/")
+						end,
+					},
+					{
+						icon = " ",
+						key = "R",
+						desc = "Mis Proyectos (GitHub)",
+						action = function()
+							vim.ui.open("https://github.com/juanca0423/")
+						end,
+					},
 				},
+				keys2 = {},
 			},
 		},
-
+		picker = {
+			enabled = true,
+			sources = {
+				files = { hidden = true },
+			},
+		},
 		-- 2. EXPLORADOR (Configuración Reforzada)
 		explorer = {
 			enabled = true,
@@ -100,23 +144,21 @@ return {
 	},
 	config = function(_, opts)
 		require("snacks").setup(opts)
-
-		-- Autocomando para el dashboard
+		-- CAMBIO SUGERIDO: Usa Schedule para evitar que el dashboard se abra
+		-- mientras Neovim todavía está limpiando la memoria del buffer anterior.
 		vim.api.nvim_create_autocmd("BufDelete", {
 			callback = function()
-				local bufs = vim.api.nvim_list_bufs()
-				local valid_bufs = 0
-				for _, buf in ipairs(bufs) do
-					if vim.api.nvim_buf_is_valid(buf) and vim.bo[buf].buflisted then
-						valid_bufs = valid_bufs + 1
+				vim.schedule(function() -- Esto da un respiro al editor
+					local valid_bufs = vim.tbl_filter(function(b)
+						return vim.api.nvim_buf_is_valid(b) and vim.bo[b].buflisted
+					end, vim.api.nvim_list_bufs())
+
+					if #valid_bufs == 0 and vim.bo.filetype ~= "snacks_dashboard" then
+						require("snacks").dashboard.open()
 					end
-				end
-				if valid_bufs == 0 then
-					require("snacks").dashboard.open()
-				end
+				end)
 			end,
 		})
-
 		-- TUS MAPEOS
 		vim.keymap.set("n", "<leader>t", function()
 			Snacks.explorer()

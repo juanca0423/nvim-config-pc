@@ -6,7 +6,6 @@ local function harpoon_status()
 	end
 
 	local list = harpoon:list()
-	-- Normalizamos rutas para evitar el error de la doble barra en Windows
 	local current_file_path = vim.fn.expand("%:p:."):gsub("\\", "/")
 
 	for i, item in ipairs(list.items) do
@@ -20,25 +19,32 @@ end
 return {
 	"nvim-lualine/lualine.nvim",
 	event = "BufReadPost",
-	-- ELIMINADO: nvim-web-devicons ya no es necesario por Snacks
-	dependencies = { "ThePrimeagen/harpoon" },
+	dependencies = {
+		"ThePrimeagen/harpoon",
+		"catppuccin/nvim",
+	},
 	config = function()
-		local status_cat, _ = pcall(require, "catppuccin")
+		-- 1. Intentamos cargar los colores de catppuccin directamente
+		local status_cat, cp = pcall(require, "catppuccin.palettes")
 		local my_theme = "auto"
 
 		if status_cat then
-			local cp = require("catppuccin.palettes").get_palette("mocha")
-			my_theme = {
-				normal = {
-					a = { bg = cp.blue, fg = cp.mantle, gui = "bold" },
-					b = { bg = cp.surface1, fg = cp.blue },
-					c = { bg = cp.mantle, fg = cp.text },
-				},
-				insert = { a = { bg = cp.green, fg = cp.mantle, gui = "bold" } },
-				visual = { a = { bg = cp.mauve, fg = cp.mantle, gui = "bold" } },
-				replace = { a = { bg = cp.red, fg = cp.mantle, gui = "bold" } },
-				inactive = { a = { bg = cp.mantle, fg = cp.blue } },
-			}
+			-- Usamos la paleta mocha
+			local mocha = cp.get_palette("mocha")
+
+			-- Cargamos el tema base de lualine para catppuccin
+			my_theme = require("lualine.themes.catppuccin-mocha")
+
+			-- 2. Sobrescribimos solo las partes específicas que quieres personalizar
+			-- Esto asegura que el resto del tema (command mode, terminal, etc.) funcione
+			my_theme.normal.a = { bg = mocha.blue, fg = mocha.mantle, gui = "bold" }
+			my_theme.normal.b = { bg = mocha.surface1, fg = mocha.blue }
+			my_theme.normal.c = { bg = mocha.mantle, fg = mocha.text }
+
+			my_theme.insert.a = { bg = mocha.green, fg = mocha.mantle, gui = "bold" }
+			my_theme.visual.a = { bg = mocha.mauve, fg = mocha.mantle, gui = "bold" }
+			my_theme.replace.a = { bg = mocha.red, fg = mocha.mantle, gui = "bold" }
+			my_theme.inactive.a = { bg = mocha.mantle, fg = mocha.blue }
 		end
 
 		require("lualine").setup({
@@ -47,9 +53,8 @@ return {
 				globalstatus = true,
 				icons_enabled = true,
 				disabled_filetypes = {
-					-- ACTUALIZADO: Quitamos NvimTree y añadimos los de Snacks
-					statusline = { "alpha", "dashboard", "snacks_dashboard", "snacks_explorer" },
-					winbar = { "alpha", "dashboard", "snacks_dashboard", "snacks_explorer" },
+					statusline = { "dashboard", "snacks_dashboard", "snacks_explorer" },
+					winbar = { "dashboard", "snacks_dashboard", "snacks_explorer" },
 				},
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },

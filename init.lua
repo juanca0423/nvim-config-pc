@@ -11,13 +11,17 @@ if vim.fn.has("win32") == 1 then
 	vim.opt.shellxquote = ""
 	-- Permitir que Neovim abra enlaces con 'gx' en Windows
 	vim.g.netrw_browsex_viewer = "cmd /c start"
+	-- SOLUCIÓN: Limpieza de pantalla al salir en Windows
+	vim.api.nvim_create_autocmd("VimLeave", {
+		callback = function()
+			-- Esto envía el comando de limpieza a la terminal de Windows al salir
+			os.execute("cls")
+		end,
+	})
 end
 
 -- 0. CODIFICACIÓN Y LEADER (Debe ir al puro principio)
 vim.g.mapleader = ","
-vim.opt.encoding = "utf-8"
-vim.opt.fileencoding = "utf-8"
-vim.scriptencoding = "utf-8"
 -- 1. SOLUCIÓN PARA TREESITTER (Runtimepath)
 local data_path = vim.fn.stdpath("data"):gsub("\\", "/")
 local site_path = data_path .. "/site"
@@ -26,9 +30,6 @@ if not vim.tbl_contains(vim.opt.rtp:get(), site_path) then
 	vim.opt.rtp:append(site_path)
 end
 
--- 2. PROVIDERS Y RUTA DE NODE
--- vim.g.loaded_netrw = 1
--- vim.g.loaded_netrwPlugin = 1
 vim.g.node_host_prog = vim.fn.expand("$APPDATA/npm/node_modules/neovim/bin/cli.js")
 
 -- 3. CARGAR OPCIONES (Tus 2 espacios y diagnósticos)
@@ -87,17 +88,3 @@ pcall(require, "config.autocomandos")
 pcall(function()
 	require("config.generate_cheatsheet").setup()
 end)
-
--- 7. ESTÉTICA FINAL
-vim.cmd("highlight CursorLineNr guifg=#FAB387 gui=bold")
-vim.api.nvim_set_hl(0, "TreesitterContext", { bg = "#1e1e2e" })
-vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { fg = "#F9E2AF", bg = "#1e1e2e" })
-
--- Auto-refresh Lualine
-vim.api.nvim_create_autocmd("BufEnter", {
-	callback = function()
-		if vim.bo.filetype ~= "alpha" then
-			pcall(require("lualine").refresh)
-		end
-	end,
-})

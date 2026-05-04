@@ -165,7 +165,18 @@ Si los tests fallan en Neovim pero pasan local, revisa si el contenedor tiene ac
 docker inspect -f '{{.State.Status}}' nombre_del_contenedor
 ```
 
+## 🛠️ Troubleshooting (Solución de Problemas)
 
+### 🐘 Mi base de datos Postgres no arranca
+Si el contenedor de Docker dice que los archivos son incompatibles (v17 vs v18):
+1. Ejecuta: `docker-compose down`
+2. Borra la carpeta de volumen: `Remove-Item -Recurse -Force ./postgres_data`
+3. Reinicia: `d-up` (esto recreará la DB limpia).
+
+### 🚀 El perfil carga lento (> 2s)
+1. Revisa si el cronómetro subió.
+2. Limpia el caché de Oh My Posh: `Remove-Item $env:TEMP\oh-my-posh-cache-*.ps1`
+3. Recarga con `r`.
 ---
 
 ### 1. Mantenimiento Diario: El "Warm-up" del Dev
@@ -241,9 +252,142 @@ Si al crear un `nuevo-repo` los paquetes no se descargan bien:
     go mod tidy
     ```
 
+### 🐹 Go Quick-Fix
+- Limpiar caché de módulos: `go clean -modcache`
+- Actualizar dependencias: `go mod tidy`
+- Ver por qué falla un import: `go mod verify`
+
 ---
 
-### 🚀 Un toque extra para tu `REQUISITOS.md`
+# Usar PowerShell 7 (pwsh) como terminal definitiva 
 
-He diseñado este pequeño diagrama para que veas cómo interactúan ahora todas las piezas que hemos configurado: tu Terminal, tus Scripts de PowerShell, Neovim y los Contenedores.
+¡Perfecto! Usar PowerShell 7 (pwsh) es la mejor opción. Aquí tienes cómo hacerlo tu predeterminado:
+* Opción 1: Cambiar en Windows Terminal (Recomendado)
+  - Si usas Windows Terminal (la app moderna de terminal):
+  - Abre Windows Terminal
+  - Presiona `Ctrl +` , (o clic en ▼ → Configuración)
+  - En "Perfil predeterminado" selecciona PowerShell (el icono negro, no el azul de Windows PowerShell)
+  - Guarda (`Ctrl + S`)
+   `https://learn.microsoft.com/en-us/windows/terminal/images/settings-default-profile.png`
+* Opción 2: Crear acceso directo personalizado
+  - Crea un archivo pwsh.lnk en tu escritorio con este destino:
+   `"C:\Program Files\PowerShell\7\pwsh.exe" -NoExit -Command "cd ~"`
+* Opción 3: Reemplazar `Win + X` menú (Avanzado)
 
+  Si quieres que `Win + X → I` abra pwsh en lugar de Windows PowerShell:
+  Powershell
+  Ejecutar como Administrador en Windows 
+  ```PowerShell
+  Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "DontUsePowerShellOnWinX" -Value 0
+  ```
+  Luego reinicia el explorador:
+  ```Powershell
+  Stop-Process -Name explorer
+  ```
+  Verificación Rápida
+  Una vez configurado, abre una nueva terminal y verifica:
+  ```Powershell
+  $PSVersionTable.PSVersion
+  ```
+  Debe mostrar 7.x.x, no 5.1.
+  >[!TIP]Nota: La forma más infalible en Windows 11 es ir a 
+  >Configuración > Privacidad y seguridad > Para programadores y activar la opción de Terminal como aplicación predeterminada.
+
+Bonus: Tu perfil funcionará al 100%
+Con pwsh tendrás:
+✅ Terminal-Icons sin errores
+✅ Mejor rendimiento
+✅ Todas tus funciones (nuevo-repo, db-shell, etc.)
+✅ Oh My Posh optimizado
+
+---
+
+## Problemas con OH MY POSH 
+
+Problema Tu Oh My Posh se está cargando en pwsh, pero con un tema diferente (el default en lugar de tu Catppuccin Mocha). Además, el prompt muestra  Usuario  en lugar de tu  Usuario@juan-carlos.
+El problema está en tu lógica de caché de Oh My Posh. En tu $PROFILE tienes esto:
+```Powershell
+# --- OH MY POSH CACHE ---
+$poshCache = "$env:TEMP\oh-my-posh-cache.ps1"
+if (-not (Test-Path $poshCache)) {
+    oh-my-posh init pwsh --config "$HOME\Documents\PoshThemes\catppuccin_mocha.omp.json" > $poshCache
+}
+```
+El problema: El archivo de caché ya existe pero fue generado para Windows PowerShell (con powershell en lugar de pwsh), o el tema no se está aplicando correctamente.
+Solución Rápida: Limpiar Caché y Regenerar
+Ejecuta estos comandos en tu pwsh actual:
+```Powershell
+# 1. Eliminar el caché viejo
+Remove-Item "$env:TEMP\oh-my-posh-cache.ps1" -ErrorAction SilentlyContinue
+# 2. Recargar el perfil
+. $PROFILE
+```
+Esto regenerará el caché con la configuración correcta para pwsh.
+Solución Definitiva: Mejorar tu configuración
+Para evitar este problema en el futuro, modifica tu $PROFILE. Reemplaza esta sección:
+```owershell
+# --- OH MY POSH CACHE ---
+$poshCache = "$env:TEMP\oh-my-posh-cache.ps1"
+if (-not (Test-Path $poshCache)) {
+    oh-my-posh init pwsh --config "$HOME\Documents\PoshThemes\catppuccin_mocha.omp.json" > $poshCache
+}
+. $poshCache
+```
+Por esta versión más robusta:
+```Powershell
+# --- OH MY POSH ---
+$poshConfig = "$HOME\Documents\PoshThemes\catppuccin_mocha.omp.json"
+$poshCache = "$env:TEMP\oh-my-posh-cache-$($PSVersionTable.PSVersion.Major).ps1"
+
+# Regenerar si no existe o si cambió la configuración
+if (-not (Test-Path $poshCache) -or (Get-Item $poshConfig).LastWriteTime -gt (Get-Item $poshCache).LastWriteTime) {
+    oh-my-posh init pwsh --config $poshConfig --no-status > $poshCache
+}
+. $poshCache
+```
+Cambios clave:
+Caché separado por versión de PowerShell (-PSVersionTable.PSVersion.Major)
+Detecta cambios en el archivo de tema y regenera automáticamente
+Si sigue sin funcionar...
+Verifica que el tema existe:
+```Powershell
+Test-Path "$HOME\Documents\PoshThemes\catppuccin_mocha.omp.json"
+```
+Si no existe, descárgalo:
+```Powershell
+# Crear directorio si no existe
+New-Item -ItemType Directory -Path "$HOME\Documents\PoshThemes" -Force
+
+# Descargar tema Catppuccin Mocha
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/JanDeDobbeleer/oh-my-posh/main/themes/catppuccin_mocha.omp.json" -OutFile "$HOME\Documents\PoshThemes\catppuccin_mocha.omp.json"
+```
+
+Luego recarga:
+```Powershell
+. $PROFILE
+```
+
+---
+|White|Text / Lavender|Fechas y texto secundario.|
+
+
+## 🎨 Paleta de Colores (Catppuccin Mocha)
+
+| Elemento | Color PWSH | Tono Catppuccin | Hex (Ref) |
+| :--- | :--- | :--- | :--- |
+| Logo / Títulos | `Magenta` | Pink | `#f5c2e7` |
+| Rutas / Links | `Cyan` | Sky | `#89dceb` |
+| Advertencias | `Yellow` | Peach | `#fab387` |
+| Sincronización | `Green` | Green | `#a6e3a1` |
+| Líneas / Info | `DarkGray` | Surface1 | `#585b70` |
+| Texto General | `White` | Text (Mocha) | `#cdd6f4` |
+
+---
+
+## 🚀 Optimización de Rendimiento (Lazy Loading)
+
+Para mantener el inicio por debajo de los **200ms**, aplicamos carga perezosa en los módulos pesados:
+
+1. **Terminal-Icons:** Solo se carga al ejecutar `ll` por primera vez.
+2. **Oh My Posh:** Se usa un sistema de caché basado en la versión de la terminal y la última modificación del tema.
+---

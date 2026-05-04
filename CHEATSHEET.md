@@ -65,7 +65,6 @@
 | `p / P` | 📋 Pegar con historial | Yanky |
 | `s` | 🎯 Saltar a cualquier letra | Flash |
 
-
 ### 🐞 Debugging (DAP) & Go
 | Atajo | Acción | Plugin |
 | :--- | :--- | :--- |
@@ -78,11 +77,11 @@
 | `K` | 📖 Ver documentación (Hover) | LSP |
 | `<leader>tn` | Ejecutar Test cercano | Vim-Test |
 | `<leader>tf` | Ejecutar Test del archivo | Vim-Test |
-|`<leader>e`|Ver Error flotante||
-|`<leader>v`|Toggle Texto Virtual||
+|`<leader>e`|Ver Error flotante|averiguar|
+|`<leader>v`|Toggle Texto Virtual|averiguar|
 |`<leader>v`| Toggle Texto Virtual (Errores) | Diagnósticos |
-|`<leader>xx`| Trouble: Ver lista de errores ||
-|`<leader>xd`| Errores del archivo ||
+|`<leader>xx`| Trouble: Ver lista de errores |Trouble|
+|`<leader>xd`| Errores del archivo |Trouble|
 
 ### 🐳 Docker & Terminal
 | Atajo | Acción | Contexto |

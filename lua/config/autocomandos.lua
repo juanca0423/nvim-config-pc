@@ -4,7 +4,19 @@
 local function augroup(name)
 	return vim.api.nvim_create_augroup("gemini_custom_" .. name, { clear = true })
 end
+-- 7. ESTÉTICA FINAL
+vim.cmd("highlight CursorLineNr guifg=#FAB387 gui=bold")
+vim.api.nvim_set_hl(0, "TreesitterContext", { bg = "#1e1e2e" })
+vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { fg = "#F9E2AF", bg = "#1e1e2e" })
 
+-- Auto-refresh Lualine
+vim.api.nvim_create_autocmd("BufEnter", {
+	callback = function()
+		if vim.bo.filetype ~= "alpha" then
+			pcall(require("lualine").refresh)
+		end
+	end,
+})
 -- 1. LIMPIEZA DE BASURA SHADA (Específico para Windows)
 -- Evita que se acumulen archivos temporales que ralentizan el inicio
 if vim.fn.has("win32") == 1 then
@@ -40,15 +52,39 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 	end,
 })
 
--- Corrección para Handlebars (HBS) como HTML
+-- Corrección para Handlebars (HBS)
 vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	group = augroup("hbs_fix"),
+	group = vim.api.nvim_create_augroup("hbs_fix", { clear = true }),
 	pattern = "*.hbs",
 	callback = function()
-		vim.bo.filetype = "html"
-		pcall(vim.treesitter.start)
+		-- Esto activa el formateador de handlebars
+		vim.bo.filetype = "handlebars"
+		-- Esto le dice a Treesitter que use la gramática de HTML para los colores
+		-- mientras mantiene la identidad de hbs
+		pcall(vim.treesitter.start, nil, "html") -- html
 	end,
 })
+
+vim.api.nvim_create_user_command("OpenDocs", function()
+	-- Usamos la variable de entorno USERPROFILE para que sea una ruta exacta
+	local home = os.getenv("USERPROFILE"):gsub("\\", "/")
+	local path = home .. "/Documents/Desarrollo/DocMd"
+
+	-- Verificamos si la carpeta existe antes de abrir el picker
+	if vim.fn.isdirectory(path) == 0 then
+		print("⚠️ Ruta no encontrada: " .. path)
+		return
+	end
+
+	require("snacks").picker.files({
+		cwd = path,
+		title = " 󰈙 Mis Documentos MD ",
+		-- Esto asegura que use el buscador de Snacks y no Telescope
+		finder = "files",
+		format = "file",
+		hidden = true,
+	})
+end, {})
 
 -- 4. COMPORTAMIENTO DE INTERFAZ (Versión Segura para Alpha)
 vim.api.nvim_create_autocmd("BufEnter", {
@@ -117,6 +153,28 @@ vim.api.nvim_create_user_command("GoFix", function()
 	print("🛠️ Formateo aplicado y diagnósticos actualizados.")
 end, { desc = "Formatea el buffer y revisa errores" })
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+	pattern = "*.go",
+	callback = function()
+		-- 1. Primero organizamos imports con un timeout seguro
+		local params = vim.lsp.util.make_range_params()
+		params.context = { only = { "source.organizeImports" } }
+		local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1000)
+
+		for _, res in pairs(result or {}) do
+			for _, r in pairs(res.result or {}) do
+				if r.edit then
+					vim.lsp.util.apply_workspace_edit(r.edit, "utf-8")
+				end
+			end
+		end
+
+		-- 2. EN LUGAR DE vim.lsp.buf.format, usa Conform si lo tienes instalado
+		-- Si NO usas Conform, deja la línea de abajo.
+		-- Si USAS Conform, cámbiala por: require("conform").format({ bufnr = 0 })
+		require("conform").format({ bufnr = 0 })
+	end,
+})
 -- ==========================================================================
 -- EJECUTOR RÁPIDO DE GO (Terminal Flotante)
 -- ==========================================================================
@@ -137,16 +195,6 @@ end
 -- Creamos el mapeo: <leader>rr (Run Root)
 vim.keymap.set("n", "<leader>rr", run_go_project, { desc = "Ejecutar Proyecto Go" })
 
--- Limpiar automáticamente los ^M al pegar o guardar
-vim.api.nvim_create_autocmd({ "BufWritePre", "BufReadPost" }, {
-	pattern = "*",
-	callback = function()
-		local save_cursor = vim.fn.getpos(".")
-		vim.cmd([[%s/\r$//e]])
-		vim.fn.setpos(".", save_cursor)
-	end,
-})
-
 -- Activar Inlay Hints automáticamente (v0.11+)
 vim.api.nvim_create_autocmd("LspAttach", {
 	callback = function(args)
@@ -154,5 +202,15 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		if client and client.server_capabilities.inlayHintProvider then
 			vim.lsp.inlay_hint.enable(true, { bufnr = args.buf })
 		end
+	end,
+})
+
+-- Otra opción más moderna si la anterior no basta:
+-- Esto le dice a Neovim que restaure el estado de la terminal al salir
+vim.api.nvim_create_autocmd("VimLeave", {
+	callback = function()
+		vim.opt.guicursor = "a:ver25" -- Restaura el cursor a una barra al salir
+		-- Ejecuta un clear automático al cerrar Neovim (el truco final)
+		vim.fn.jobstart("cls", { detach = true })
 	end,
 })

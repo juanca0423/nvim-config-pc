@@ -183,8 +183,16 @@ vim.keymap.set("n", "<leader>h", "<cmd>Telescope yank_history<CR>", { desc = "Hi
 vim.keymap.set("n", "<leader>td", "<cmd>TodoTelescope<CR>", { desc = "Buscar TODOs" })
 vim.keymap.set("n", "<leader>fs", tb.lsp_document_symbols, { desc = "Símbolos del Archivo" })
 vim.keymap.set("n", "<leader>fS", tb.lsp_dynamic_workspace_symbols, { desc = "Símbolos del Proyecto" })
--- Abrir lista de proyectos con Telescope
-vim.keymap.set("n", "<leader>fp", ":Telescope projects<CR>", { desc = "Buscar Proyectos" })
+-- Buscar entre tus proyectos recientes con Snacks
+vim.keymap.set("n", "<leader>fp", function()
+	---@diagnostic disable: undefined-global
+	Snacks.picker.projects()
+end, { desc = "Proyectos Recientes" })
+
+-- Buscar en la documentación oficial rápidamente
+vim.keymap.set("n", "<leader>hd", function()
+	Snacks.picker.help()
+end, { desc = "Buscar en Ayuda/Doc" })
 
 -- =============================================================================
 -- ADMIN Y CONFIG

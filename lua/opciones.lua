@@ -8,6 +8,9 @@ vim.opt.relativenumber = true
 vim.opt.signcolumn = "yes"
 vim.opt.termguicolors = true
 vim.opt.cursorline = true
+vim.opt.encoding = "utf-8"
+vim.opt.fileencoding = "utf-8"
+vim.scriptencoding = "utf-8"
 
 -- 3. INDENTACIÓN (2 ESPACIOS)
 vim.api.nvim_create_autocmd({ "BufEnter", "BufReadPost", "FileType" }, {
@@ -58,5 +61,18 @@ vim.diagnostic.config({
 })
 
 -- Handlers de LSP
-vim.lsp.handlers["textDocument/hover"] = vim.lsp.with(vim.lsp.handlers.hover, { border = "rounded" })
-vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = "rounded" })
+-- Handlers de LSP (Versión corregida para Nvim 0.12+)
+vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
+	return vim.lsp.handlers.hover(err, result, ctx, vim.tbl_extend("force", config or {}, { border = "rounded" }))
+end
+
+vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
+	return vim.lsp.handlers.signature_help(
+		err,
+		result,
+		ctx,
+		vim.tbl_extend("force", config or {}, { border = "rounded" })
+	)
+end -- Forzar la ayuda en español
+
+vim.opt.helplang = "en"

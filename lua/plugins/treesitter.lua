@@ -5,13 +5,18 @@ return {
 		event = { "BufReadPost", "BufNewFile" },
 		cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleStat", "TSTree", "TSUpdate" },
 		config = function()
-			local parser_path = vim.fn.stdpath("data"):gsub("\\", "/") .. "/site"
+			-- Usamos stdpath("data") y nos aseguramos de que termine en /site
+			local data_path = vim.fn.stdpath("data"):gsub("\\", "/")
+			local parser_path = data_path .. "/site"
 
-			if vim.fn.isdirectory(parser_path) == 0 then
-				vim.fn.mkdir(parser_path, "p")
+			-- IMPORTANTE: Neovim necesita ver la carpeta 'parser' dentro de 'site'
+			-- para que Treesitter reconozca los binarios .so o .dll
+			if vim.fn.isdirectory(parser_path .. "/parser") == 0 then
+				vim.fn.mkdir(parser_path .. "/parser", "p")
 			end
 
-			vim.opt.runtimepath:append(parser_path)
+			-- Agregamos al inicio del runtimepath para prioridad
+			vim.opt.runtimepath:prepend(parser_path)
 
 			local ok, configs = pcall(require, "nvim-treesitter.configs")
 			if not ok then
@@ -19,23 +24,20 @@ return {
 			end
 
 			configs.setup({
-				parser_install_dir = parser_path,
+				-- Indicamos a TS dónde instalar físicamente los parsers
+				install_dir = parser_path,
 				ensure_installed = {
-					"lua",
 					"go",
+					"lua",
+					"sql",
+					"html",
 					"javascript",
 					"typescript",
 					"markdown",
-					"vim",
-					"vimdoc",
-					"query",
-					"sql",
-					"html",
 					"css",
-					"http",
-					"embedded_template",
 					"glimmer",
-					"markdown_inline",
+					"handlebars",
+					"powershell",
 				},
 				highlight = {
 					enable = true,
