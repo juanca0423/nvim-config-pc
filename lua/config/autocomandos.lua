@@ -53,16 +53,24 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 })
 
 -- Corrección para Handlebars (HBS)
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-	group = vim.api.nvim_create_augroup("hbs_fix", { clear = true }),
-	pattern = "*.hbs",
-	callback = function()
-		-- Esto activa el formateador de handlebars
-		vim.bo.filetype = "handlebars"
-		-- Esto le dice a Treesitter que use la gramática de HTML para los colores
-		-- mientras mantiene la identidad de hbs
-		pcall(vim.treesitter.start, nil, "html") -- html
-	end,
+-- vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+-- 	group = vim.api.nvim_create_augroup("hbs_fix", { clear = true }),
+-- 	pattern = "*.hbs",
+-- 	callback = function()
+-- 		-- Esto activa el formateador de handlebars
+-- 		vim.bo.filetype = "handlebars"
+-- 		vim.bo.indentexpr = ""
+-- 		-- Esto le dice a Treesitter que use la gramática de HTML para los colores
+-- 		-- mientras mantiene la identidad de hbs
+-- 		pcall(vim.treesitter.start, nil, "html") -- html
+-- 	end,
+-- })
+
+vim.filetype.add({
+	extension = {
+		hbs = "handlebars",
+		gohtml = "html", -- De paso arreglamos el aviso de Go que viste antes
+	},
 })
 
 vim.api.nvim_create_user_command("OpenDocs", function()
@@ -86,18 +94,7 @@ vim.api.nvim_create_user_command("OpenDocs", function()
 	})
 end, {})
 
--- 4. COMPORTAMIENTO DE INTERFAZ (Versión Segura para Alpha)
-vim.api.nvim_create_autocmd("BufEnter", {
-	group = vim.api.nvim_create_augroup("nvim_tree_close", { clear = true }),
-	nested = true,
-	callback = function()
-		local wins = vim.api.nvim_list_wins()
-		-- Si solo queda una ventana y es NvimTree, cerramos
-		if #wins == 1 and vim.api.nvim_buf_get_name(0):match("NvimTree_") ~= nil then
-			vim.cmd("quit")
-		end
-	end,
-})
+
 
 -- 5. AJUSTES DE TERMINAL
 -- Quitar números de línea y entrar en modo inserto automáticamente en la terminal

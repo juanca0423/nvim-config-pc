@@ -14,6 +14,7 @@ return {
 			["handlebars.html"] = { "prettier" },
 			css = { "prettier" },
 			ps1 = { "powershell_editor_services" },
+			sql = { "sleek" },
 		},
 		formatters = {
 			prettier = {
@@ -28,6 +29,10 @@ return {
 					"--tab-width",
 					"2",
 				},
+			},
+			sleek = {
+				-- --width 1000 asegura que tus catálogos contables queden en una sola línea
+				args = { "--width", "1000", "--uppercase", "true" },
 			},
 		},
 		format_on_save = {
