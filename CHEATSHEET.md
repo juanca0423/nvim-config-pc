@@ -3,59 +3,61 @@
 |Comando|Descripcióndocker|
 | :--- | :--- |
 | `<leader>` | `,`|
- 
+
 ## Archivos y Buffers
 |Comando|Descripcióndocker|
 | :--- | :--- |
 | `<leader>w` | guardar archivo|
 | `<leader>q` | cerrar buffer actual|
-| `<leader>ba` | cerrar otros buffers|
-| `<leader>cp` | copiar ruta completa del archivo actual|
-| `<leader>wb` | abrir `http://localhost:8080`|
-| `Tab` | siguiente buffer|
-| `Shift+Tab` | buffer anterior|
-| `-` | abrir Oil (explorador de archivos)| 
-                   
+| `<leader>ba` | cerrar todos los demás buffers|
+| `<leader>cp` | copiar ruta completa del archivo actual al portapapeles|
+| `<leader>wb` | abrir `http://localhost:8080` en el navegador|
+| `<Tab>` | siguiente buffer|
+| `<S-Tab>` | buffer anterior|
+| `-` | abrir Oil (explorador de archivos)|
+
 ## Navegación y Layout
-Comando|Descripcióndocker|
-| :--- | :--- |
-| `<C-Left>` / `<C-Down>` / `<C-Up>` / `<C-Right>` | mover entre ventanas|
-| `<M-Right>` / `<M-Left>` / `<M-Down>` / `<M-Up>` | redimensionar ventanas|
-| `<leader>m` | maximizar ventana actual|    
-| `<leader>|` | igualar tamaño de ventanas|    
-| `<leader>zm` | modo Zen Maximize|    
-                    
-## LSP y Diagnósticos
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `gi` | ir a implementación|    
-| `gd` | ir a definición|    
-| `gr` | ver referencias|    
-| `K` | hover / documentación|    
-| `i<C-k>` | firma de función (LSP)|    
-| `<leader>d` | diagnóstico flotante|    
-| `<leader>e` | error flotante|    
-| `]d` / `[d` | siguiente/anterior diagnóstico|    
+| `<C-Left>` / `<C-Down>` / `<C-Up>` / `<C-Right>` | mover cursor a ventana|
+| `<M-Right>` / `<M-Left>` / `<M-Down>` / `<M-Up>` | agrandar/reducir ventana|
+| `<leader>m` | maximizar la ventana actual|
+| `<leader>|` | equalizar tamaño de ventanas|
+| `<leader>zm` | activar/desactivar modo Zen Maximize|
+
+## LSP y Programación
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `gi` | ir a implementación|
+| `gd` | ir a definición|
+| `gr` | ver referencias|
+| `K` | mostrar hover de LSP|
+| `i <C-k>` | firma de función en modo insert|
+| `<leader>d` | abrir ventana flotante de diagnóstico|
+| `<leader>e` | mostrar error flotante|
+| `]d` | ir al siguiente diagnóstico|
+| `[d` | ir al diagnóstico anterior|
 | `<leader>v` | alternar texto virtual de diagnósticos|
-| `<leader>rn` | renombrar símbolo|    
-| `<leader>ca` | acción de código|    
-| `<leader>he` | ayuda flotante personalizada|    
-                     
+| `<leader>rn` | renombrar símbolo|
+| `<leader>ca` | acciones de código|
+| `<leader>he` | ayuda flotante personalizada|
+| `gf` | buscar siguiente función / palabra de definición|
+
 ## Snippets
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `i<C-k>` | expandir o saltar snippet| 
-| `i<C-j>` | saltar hacia atrás en snippet|
-                   
+| `i <C-k>` | expandir o saltar en snippets (luasnip)|
+| `i <C-j>` | saltar hacia atrás en snippets (luasnip)|
+
 ## Debugging (DAP)
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `<leader>db` | toggle breakpoint|
-| `<leader>dc` | continuar DAP|
-| `<leader>dn` | step over|
-| `<leader>di` | step into|
+| `<leader>db` | activar/desactivar breakpoint|
+| `<leader>dc` | continuar ejecución|
+| `<leader>dn` | step over (paso siguiente)|
+| `<leader>di` | step into (entrar)|
 | `<leader>dr` | reiniciar DAP|
-| `<leader>gt` | debug test Go (`dap-go`)|
+| `<leader>gt` | ejecutar test Go con `dap-go`|
 | `<leader>dh` | hover variable en DAP|
 | `<leader>de` | abrir REPL de DAP|
 | `F5` | iniciar / continuar debug|
@@ -65,7 +67,17 @@ Comando|Descripcióndocker|
 | `<leader>b` | toggle breakpoint|
 | `<leader>B` | set breakpoint condicional|
 | `<leader>du` | toggle UI de DAP|
-                     
+
+## Terminal y ToggleTerm
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `<C-\>` | abrir/cerrar terminal general|
+| `<leader>tf` | abrir terminal flotante|
+| `<leader>th` | abrir terminal horizontal|
+| `<Esc><Esc>` | salir de modo terminal|
+| `jk` | salir de modo terminal|
+| `t<C-h>` / `t<C-j>` / `t<C-k>` / `t<C-l>` | navegar entre ventanas desde terminal|
+
 ## Git / Gitsigns
 |Comando|Descripcióndocker|
 | :--- | :--- |
@@ -74,57 +86,111 @@ Comando|Descripcióndocker|
 | `<leader>hp` | previsualizar hunk|
 | `<leader>hb` | blame completo de línea|
 | `<leader>hd` | diff del archivo|
-                     
-## Terminal y ToggleTerm
+
+## 🤖 AI (CodeCompanion + Ollama)
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `<C-\>` | abrir/cerrar terminal general|
-| `<leader>tf` | abrir terminal flotante|
-| `<leader>th` | abrir terminal horizontal| 
-| `<Esc><Esc>` | salir de modo terminal|  
-| `jk` | salir de modo terminal| 
-| `t<C-h>` / `t<C-j>` / `t<C-k>` / `t<C-l>` | navegar entre ventanas desde terminal|
-                    
-## Plugins importantes
+| `<leader>ai` | Toggle AI Chat|
+| `<leader>ap` | AI Actions (v)|n| `<leader>ae` | AI Inline Command|
+
+## 🌐 Kulala (HTTP Client)
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `p` / `P` | pegar desde Yanky|  
-| `<M-p>` | ciclo adelante en Yanky|  
-| `<M-n>` | ciclo atrás en Yanky|  
-| `<leader>a` | marcar archivo con Harpoon| 
-| `<C-e>` | abrir menú rápido de Harpoon|  
+| `<leader>hr` | Ejecutar petición HTTP|
+| `<leader>hv` | Cambiar vista (Cuerpo/Headers)|
+| `<leader>hn` | Siguiente petición|
+| `<leader>hp` | Petición anterior|
+
+## 📍 Harpoon
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `<leader>a` | marcar archivo|
+| `<C-e>` | abrir menú rápido de Harpoon|
 | `<A-1>` … `<A-5>` | saltar a marca Harpoon 1..5|
+
+## 🔭 Telescope y Búsqueda
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `<leader>ff` | buscar archivos|
+| `<leader>fg` | buscar texto con live grep|
+| `<leader>fb` | listar buffers|
+| `<leader>fr` | abrir archivos recientes|
+| `<leader>h` | historial de yank con Telescope|
+| `<leader>td` | buscar TODOs con TodoTelescope|
+| `<leader>fs` | símbolos del documento con Telescope|
+| `<leader>fS` | símbolos del workspace dinámicos con Telescope|
+| `<leader>fp` | proyectos recientes con Snacks|
+| `<leader>hd` | buscar ayuda/documentación con Snacks|
+
+## 🍿 Snacks
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `<leader>t` | explorador Snacks|
+| `<leader>lg` | abrir Lazygit desde Snacks|
+| `<leader>aa` | abrir dashboard Snacks|
+
+## ⚠️ Trouble
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `<leader>xx` | Proyecto: Errores|
+| `<leader>xd` | Archivo Actual: Errores|
+| `<leader>xr` | LSP: Referencias|
+| `<leader>xt` | Lista de TODOs|
+| `<leader>xq` | Quickfix List|
+
+## 🔍 Spectre (Buscar/Reemplazar)
+|Comando|Descripcióndocker|
+| :--- | :--- |
 | `<leader>S` | abrir Spectre (buscar/reemplazar)|
-| `<leader>t` | explorador Snacks|  
-| `<leader>lg` | abrir Lazygit desde Snacks|  
-| `<leader>aa` | abrir dashboard Snacks|  
-| `<leader>dk` | abrir LazyDocker|  
-                    
-## SQL
+
+## 🗄️ Base de Datos
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `<leader>rq` | ejecutar SQL con `DB`|  
-| `<leader>bj` | ejecutar SQL y mostrar JSON|  
-                    
-## Neotest
+| `<leader>bd` | Toggle UI de Base de Datos|
+| `<leader>sq` | Ejecutar Query SQL|
+| `<leader>rq` | ejecutar SQL con `DB`|
+| `<leader>bj` | ejecutar SQL y mostrar resultado en JSON|
+
+## 🐳 Docker
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `nnr` | correr test cercano| 
+| `<leader>dps` | mostrar estado de Docker (`docker ps`)|
+| `<leader>ddo` | ejecutar `docker-compose down`|
+| `<leader>dk` | reiniciar app Go (`docker restart go_web_app`)|
+| `<leader>drb` | reconstruir y levantar Docker (`docker-compose down && docker-compose up --build -d`)|
+| `<leader>gg` | abrir `lazygit` en terminal integrada|
+
+## 📋 Yanky (Portapapeles)
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `p` / `P` | pegar desde Yanky|
+| `<M-p>` | ciclo adelante en Yanky|
+| `<M-n>` | ciclo atrás en Yanky|
+
+## 🧪 Neotest
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `nnr` | correr test cercano|
 | `nnf` | correr tests del archivo actual|
 | `nna` | correr toda la suite|
 | `nns` | alternar summary de Neotest|
 | `nno` | abrir salida del último test|
 | `nnp` | alternar panel de salida|
-                      
-## Config y utilidades
+
+## ⚙️ Config y Utilidades
 |Comando|Descripcióndocker|
 | :--- | :--- |
-| `<leader>sv` | recargar config|
+| `<leader>sv` | recargar configuración (`source $MYVIMRC`)|
 | `<leader>cl` | limpiar caché de Neovim|
-| `<leader>f` | formatear buffer manualmente con Conform|
-| `<leader>sf` | formatear archivo SQL con Conform|
-| `<leader>.` | abrir cheatsheet|
-| `<leader>ud` | borrar cheatsheet|
-| `gf` | buscar siguiente función / palabra de definición|
-| `[[` | movimiento rápido en Handlebars|
----                 
+| `<leader>f` | formatear buffer manualmente con `conform`|
+| `<leader>sf` | formatear archivo SQL con `conform`|
+| `<leader>.` | abrir la guía de cheatsheet si existe|
+| `<leader>ud` | borrar la guía de cheatsheet (`CHEATSHEET.md`)|
+
+## 🔧 Autocomandos
+|Comando|Descripcióndocker|
+| :--- | :--- |
+| `]]` | saltar al siguiente bloque `{{#...}}` / `{{/...}}` (Handlebars)|
+| `[[` | saltar al bloque anterior `{{#...}}` / `{{/...}}` (Handlebars)|
+
+---

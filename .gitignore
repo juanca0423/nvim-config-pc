@@ -4,6 +4,12 @@
 /undodir/
 /shada/
 
+# No subir secretos o credenciales personales
+.env
+.env.local
+.env.*.local
+
 # No subir archivos temporales de swap o backup
 *.swp
 *.swo
+.aider*
