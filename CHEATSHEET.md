@@ -1,11 +1,11 @@
 # 💻 Neovim PC - Ultimate Cheat Sheet (Sincronizada)
 ## Líder
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<leader>` | `,`|
 
 ## Archivos y Buffers
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<leader>w` | guardar archivo|
 | `<leader>q` | cerrar buffer actual|
@@ -17,16 +17,16 @@
 | `-` | abrir Oil (explorador de archivos)|
 
 ## Navegación y Layout
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<C-Left>` / `<C-Down>` / `<C-Up>` / `<C-Right>` | mover cursor a ventana|
 | `<M-Right>` / `<M-Left>` / `<M-Down>` / `<M-Up>` | agrandar/reducir ventana|
 | `<leader>m` | maximizar la ventana actual|
-| `<leader>|` | equalizar tamaño de ventanas|
+| `<leader>=` | igualar tamaño de ventanas|
 | `<leader>zm` | activar/desactivar modo Zen Maximize|
 
 ## LSP y Programación
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `gi` | ir a implementación|
 | `gd` | ir a definición|
@@ -44,42 +44,34 @@
 | `gf` | buscar siguiente función / palabra de definición|
 
 ## Snippets
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `i <C-k>` | expandir o saltar en snippets (luasnip)|
 | `i <C-j>` | saltar hacia atrás en snippets (luasnip)|
 
 ## Debugging (DAP)
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<leader>db` | activar/desactivar breakpoint|
 | `<leader>dc` | continuar ejecución|
 | `<leader>dn` | step over (paso siguiente)|
 | `<leader>di` | step into (entrar)|
 | `<leader>dr` | reiniciar DAP|
+| `<leader>da` | repetir último test en DAP|
 | `<leader>gt` | ejecutar test Go con `dap-go`|
 | `<leader>dh` | hover variable en DAP|
-| `<leader>de` | abrir REPL de DAP|
-| `F5` | iniciar / continuar debug|
-| `F10` | step over|
-| `F11` | step into|
-| `F12` | step out|
-| `<leader>b` | toggle breakpoint|
+| `<leader>dq` | detener debugger / sesión DAP|
 | `<leader>B` | set breakpoint condicional|
-| `<leader>du` | toggle UI de DAP|
 
 ## Terminal y ToggleTerm
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<C-\>` | abrir/cerrar terminal general|
-| `<leader>tf` | abrir terminal flotante|
-| `<leader>th` | abrir terminal horizontal|
+| `<leader>te` | abrir terminal dividida|
 | `<Esc><Esc>` | salir de modo terminal|
-| `jk` | salir de modo terminal|
-| `t<C-h>` / `t<C-j>` / `t<C-k>` / `t<C-l>` | navegar entre ventanas desde terminal|
 
 ## Git / Gitsigns
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `]h` | siguiente hunk|
 | `[h` | hunk anterior|
@@ -88,28 +80,19 @@
 | `<leader>hd` | diff del archivo|
 
 ## 🤖 AI (CodeCompanion + Ollama)
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<leader>ai` | Toggle AI Chat|
-| `<leader>ap` | AI Actions (v)|n| `<leader>ae` | AI Inline Command|
-
-## 🌐 Kulala (HTTP Client)
-|Comando|Descripcióndocker|
-| :--- | :--- |
-| `<leader>hr` | Ejecutar petición HTTP|
-| `<leader>hv` | Cambiar vista (Cuerpo/Headers)|
-| `<leader>hn` | Siguiente petición|
-| `<leader>hp` | Petición anterior|
+| `<leader>ap` | AI Actions (v)|
+| `<leader>ae` | AI Inline Command|
 
 ## 📍 Harpoon
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<leader>a` | marcar archivo|
-| `<C-e>` | abrir menú rápido de Harpoon|
-| `<A-1>` … `<A-5>` | saltar a marca Harpoon 1..5|
 
 ## 🔭 Telescope y Búsqueda
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<leader>ff` | buscar archivos|
 | `<leader>fg` | buscar texto con live grep|
@@ -122,73 +105,35 @@
 | `<leader>fp` | proyectos recientes con Snacks|
 | `<leader>hd` | buscar ayuda/documentación con Snacks|
 
-## 🍿 Snacks
-|Comando|Descripcióndocker|
-| :--- | :--- |
-| `<leader>t` | explorador Snacks|
-| `<leader>lg` | abrir Lazygit desde Snacks|
-| `<leader>aa` | abrir dashboard Snacks|
-
-## ⚠️ Trouble
-|Comando|Descripcióndocker|
-| :--- | :--- |
-| `<leader>xx` | Proyecto: Errores|
-| `<leader>xd` | Archivo Actual: Errores|
-| `<leader>xr` | LSP: Referencias|
-| `<leader>xt` | Lista de TODOs|
-| `<leader>xq` | Quickfix List|
-
-## 🔍 Spectre (Buscar/Reemplazar)
-|Comando|Descripcióndocker|
-| :--- | :--- |
-| `<leader>S` | abrir Spectre (buscar/reemplazar)|
-
 ## 🗄️ Base de Datos
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
-| `<leader>bd` | Toggle UI de Base de Datos|
-| `<leader>sq` | Ejecutar Query SQL|
 | `<leader>rq` | ejecutar SQL con `DB`|
 | `<leader>bj` | ejecutar SQL y mostrar resultado en JSON|
 
-## 🐳 Docker
-|Comando|Descripcióndocker|
+## 🐳 Docker y Go
+|Comando|Descripción|
 | :--- | :--- |
+| `<leader>gp` | Go Test: Paquete Actual|
+| `<leader>gc` | Go: Ver Cobertura (HTML)|
 | `<leader>dps` | mostrar estado de Docker (`docker ps`)|
 | `<leader>ddo` | ejecutar `docker-compose down`|
 | `<leader>dk` | reiniciar app Go (`docker restart go_web_app`)|
 | `<leader>drb` | reconstruir y levantar Docker (`docker-compose down && docker-compose up --build -d`)|
 | `<leader>gg` | abrir `lazygit` en terminal integrada|
 
-## 📋 Yanky (Portapapeles)
-|Comando|Descripcióndocker|
-| :--- | :--- |
-| `p` / `P` | pegar desde Yanky|
-| `<M-p>` | ciclo adelante en Yanky|
-| `<M-n>` | ciclo atrás en Yanky|
-
-## 🧪 Neotest
-|Comando|Descripcióndocker|
-| :--- | :--- |
-| `nnr` | correr test cercano|
-| `nnf` | correr tests del archivo actual|
-| `nna` | correr toda la suite|
-| `nns` | alternar summary de Neotest|
-| `nno` | abrir salida del último test|
-| `nnp` | alternar panel de salida|
-
 ## ⚙️ Config y Utilidades
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `<leader>sv` | recargar configuración (`source $MYVIMRC`)|
 | `<leader>cl` | limpiar caché de Neovim|
-| `<leader>f` | formatear buffer manualmente con `conform`|
+| `<leader>fd` | formatear buffer manualmente con `conform`|
 | `<leader>sf` | formatear archivo SQL con `conform`|
 | `<leader>.` | abrir la guía de cheatsheet si existe|
 | `<leader>ud` | borrar la guía de cheatsheet (`CHEATSHEET.md`)|
 
 ## 🔧 Autocomandos
-|Comando|Descripcióndocker|
+|Comando|Descripción|
 | :--- | :--- |
 | `]]` | saltar al siguiente bloque `{{#...}}` / `{{/...}}` (Handlebars)|
 | `[[` | saltar al bloque anterior `{{#...}}` / `{{/...}}` (Handlebars)|
