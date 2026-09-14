@@ -52,16 +52,22 @@
 ## Debugging (DAP)
 |Comando|Descripción|
 | :--- | :--- |
+| `<F5>` | iniciar / continuar debug|
+| `<F10>` | step over|
+| `<F11>` | step into|
+| `<F12>` | step out|
+| `<leader>b` | toggle breakpoint|
+| `<leader>B` | set breakpoint condicional|
+| `<leader>du` | toggle UI de DAP|
+| `<leader>dq` | detener debugger y cerrar UI|
 | `<leader>db` | activar/desactivar breakpoint|
 | `<leader>dc` | continuar ejecución|
 | `<leader>dn` | step over (paso siguiente)|
 | `<leader>di` | step into (entrar)|
-| `<leader>dr` | reiniciar DAP|
-| `<leader>da` | repetir último test en DAP|
+| `<leader>dr` | reiniciar DAP / Abrir REPL|
 | `<leader>gt` | ejecutar test Go con `dap-go`|
 | `<leader>dh` | hover variable en DAP|
-| `<leader>dq` | detener debugger / sesión DAP|
-| `<leader>B` | set breakpoint condicional|
+| `<leader>de` | evaluar expresión flotante DAP|
 
 ## Terminal y ToggleTerm
 |Comando|Descripción|
