@@ -15,9 +15,9 @@ return {
 		local lspkind = require("lspkind")
 		local luasnip = require("luasnip")
 
-		lspkind.init({
-			symbol_map = { TabNine = "🤖" },
-		})
+lspkind.init({
+		symbol_map = vim.tbl_extend("force", lspkind.symbol_map, { TabNine = "🤖" }),
+	})
 
 		require("luasnip.loaders.from_vscode").lazy_load()
 

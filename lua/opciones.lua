@@ -10,18 +10,12 @@ vim.opt.termguicolors = true
 vim.opt.cursorline = true
 vim.opt.encoding = "utf-8"
 vim.opt.fileencoding = "utf-8"
-vim.scriptencoding = "utf-8"
 
--- 3. INDENTACIÓN (2 ESPACIOS)
-vim.api.nvim_create_autocmd({ "BufEnter", "BufReadPost", "FileType" }, {
-	pattern = "*",
-	callback = function()
-		vim.opt_local.tabstop = 2
-		vim.opt_local.softtabstop = 2
-		vim.opt_local.shiftwidth = 2
-		vim.opt_local.expandtab = true
-	end,
-})
+-- 3. INDENTACIÓN (2 ESPACIOS) - global, filetype plugins sobrescriben si necesario
+vim.opt.tabstop = 2
+vim.opt.softtabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
 
 -- 4. PORTAPAPELES
 -- Portapapeles usando win32yank (Adiós a los errores de PowerShell)
@@ -57,22 +51,10 @@ vim.diagnostic.config({
 	update_in_insert = false,
 	underline = true,
 	severity_sort = true,
-	float = { border = "rounded", source = "always" },
+	float = { border = "rounded", source = "if_many" },
 })
 
--- Handlers de LSP
--- Handlers de LSP (Versión corregida para Nvim 0.12+)
-vim.lsp.handlers["textDocument/hover"] = function(err, result, ctx, config)
-	return vim.lsp.handlers.hover(err, result, ctx, vim.tbl_extend("force", config or {}, { border = "rounded" }))
-end
-
-vim.lsp.handlers["textDocument/signatureHelp"] = function(err, result, ctx, config)
-	return vim.lsp.handlers.signature_help(
-		err,
-		result,
-		ctx,
-		vim.tbl_extend("force", config or {}, { border = "rounded" })
-	)
-end -- Forzar la ayuda en español
+-- Handlers de LSP (Nvim 0.12+: usar vim.lsp.config o configurar borders globalmente)
+vim.o.winborder = "rounded"
 
 vim.opt.helplang = "en"

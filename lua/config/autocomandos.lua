@@ -154,8 +154,12 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = "*.go",
 	callback = function()
 		-- 1. Primero organizamos imports con un timeout seguro
-		local params = vim.lsp.util.make_range_params()
-		params.context = { only = { "source.organizeImports" } }
+		-- Usamos la estructura completa de CodeActionParams para evitar type errors
+		local params = {
+			textDocument = vim.lsp.util.make_text_document_params(0),
+			range = vim.lsp.util.make_range_params(0, "utf-8").range,
+			context = { only = { "source.organizeImports" } },
+		}
 		local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, 1000)
 
 		for _, res in pairs(result or {}) do
@@ -166,9 +170,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 			end
 		end
 
-		-- 2. EN LUGAR DE vim.lsp.buf.format, usa Conform si lo tienes instalado
-		-- Si NO usas Conform, deja la línea de abajo.
-		-- Si USAS Conform, cámbiala por: require("conform").format({ bufnr = 0 })
+		-- 2. Formatear con Conform
 		require("conform").format({ bufnr = 0 })
 	end,
 })

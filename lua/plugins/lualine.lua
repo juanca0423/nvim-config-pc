@@ -26,7 +26,7 @@ return {
 	config = function()
 		-- 1. Intentamos cargar los colores de catppuccin directamente
 		local status_cat, cp = pcall(require, "catppuccin.palettes")
-		local my_theme = "auto"
+		local my_theme ---@type string|table
 
 		if status_cat then
 			-- Usamos la paleta mocha

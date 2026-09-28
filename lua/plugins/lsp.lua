@@ -156,11 +156,11 @@ return {
 				update_in_insert = false, -- No nos molesta mientras escribimos
 				underline = true,
 				severity_sort = true,
-				float = {
+float = {
 					focused = false,
 					style = "minimal",
-					border = "rounded", -- Bordes redondeados para que se vea premium
-					source = "always",
+					border = "rounded",
+					source = "if_many",
 					header = "",
 					prefix = "",
 				},

@@ -38,7 +38,7 @@ return {
 				bufferline = true,
 				nvimtree = true,
 				treesitter = true,
-				telescope = { enabled = true },
+				telescope = true,
 				native_lsp = { enabled = true },
 				render_markdown = true, -- Para que tus docs se vean bien
 			},
