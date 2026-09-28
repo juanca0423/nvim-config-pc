@@ -5,7 +5,7 @@ return {
 	priority = 1000,
 	lazy = false,
 	opts = {
-		-- Desactiva lo que no usas para limpiar el reporte de errores
+		-- 1. MÓDULOS DESACTIVADOS (Para máximo rendimiento)
 		image = { enabled = false },
 		indent = { enabled = false },
 		input = { enabled = false },
@@ -13,9 +13,14 @@ return {
 		scroll = { enabled = false },
 		words = { enabled = false },
 		debug = { enabled = false },
-		terminal = { enabled = true }, -- Este sí déjalo para tu consola de Go
+
+		-- 2. MÓDULOS ACTIVOS
+		terminal = { enabled = true },
 		bigfile = { enabled = true },
-		-- 1. DASHBOARD (Tu logo y botones)
+		winbar = { enabled = true },
+		notifier = { enabled = true },
+
+		-- 3. DASHBOARD
 		dashboard = {
 			animate = { enabled = true },
 			enabled = true,
@@ -41,17 +46,27 @@ return {
 						icon = " ",
 						key = "f",
 						desc = "Buscar Archivo",
-						action = ":lua Snacks.dashboard.pick('files')",
+						action = function()
+							Snacks.picker.files()
+						end,
 					},
 					{ icon = " ", key = "n", desc = "Nuevo Archivo", action = ":ene | startinsert" },
 					{
 						icon = " ",
 						key = "g",
 						desc = "Buscar Texto",
-						action = ":lua Snacks.dashboard.pick('live_grep')",
+						action = function()
+							Snacks.picker.grep()
+						end,
 					},
-					{ icon = "󰉋 ", key = "p", desc = "Mis Proyectos", action = ":lua Snacks.picker.projects()" },
-					-- Añadir en preset.keys
+					{
+						icon = "󰉋 ",
+						key = "p",
+						desc = "Mis Proyectos",
+						action = function()
+							Snacks.picker.projects()
+						end,
+					},
 					{
 						icon = "󰆼 ",
 						key = "s",
@@ -61,16 +76,25 @@ return {
 						end,
 					},
 					{ icon = " ", key = "m", desc = "Documentos md", action = ":OpenDocs" },
-					{ icon = " ", key = "r", desc = "Recientes", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+					{
+						icon = " ",
+						key = "r",
+						desc = "Recientes",
+						action = function()
+							Snacks.picker.recent()
+						end,
+					},
 					{
 						icon = " ",
 						key = "c",
 						desc = "Configuración",
-						action = ":lua Snacks.dashboard.pick('files', {cwd = vim.fn.stdpath('config')})",
+						action = function()
+							Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
+						end,
 					},
 					{ icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy" },
 					{ icon = " ", key = "q", desc = "Salir", action = ":qa" },
-					{ title = "Documentación y Enlaces", indent = 4, gap = 0, padding = 1 }, -- Título de la nueva sección
+					{ title = "Documentación y Enlaces", indent = 4, gap = 0, padding = 1 },
 					{
 						icon = "󰟓 ",
 						key = "G",
@@ -99,43 +123,51 @@ return {
 				keys2 = {},
 			},
 		},
+
+		-- 4. PICKER
 		picker = {
 			enabled = true,
 			sources = {
 				files = { hidden = true },
 			},
 		},
-		-- 2. EXPLORADOR (Configuración Reforzada)
+
+		-- 5. EXPLORADOR
 		explorer = {
 			enabled = true,
 			replace_netrw = true,
+			win = {
+				list = {
+					keys = {
+						["o"] = "open_external",
+						["<leader>gx"] = "open_external",
+					},
+				},
+			},
+			actions = {
+				open_external = function(_, item)
+					if item and item.file then
+						vim.ui.open(item.file)
+					end
+				end,
+			},
 		},
 
-		-- 3. WINBAR (Ruta en los archivos que editas)
-		winbar = { enabled = true },
-
-		-- 4. NOTIFICACIONES
-		notifier = { enabled = true },
-
-		-- 5. ESTILOS (Ajuste definitivo para Windows/PowerShell)
+		-- 6. ESTILOS
 		styles = {
 			explorer = {
 				width = 35,
 				edge = "left",
-				-- Obligamos a que el TÍTULO sea la ruta del proyecto
 				title = function()
 					return "   " .. vim.fn.fnamemodify(vim.fn.getcwd(), ":~") .. " "
 				end,
 				title_pos = "center",
-
-				-- Configuramos la ventana para que sea más robusta
 				win = {
-					border = "rounded", -- Borde redondeado para que se vea el título
+					border = "rounded",
 					wo = {
-						winbar = "", -- Limpiamos winbar interno por si hace conflicto
+						winbar = "",
 					},
 				},
-				-- Quitamos el header automático que está fallando y dejamos solo el árbol
 				sections = {
 					{ section = "tree" },
 				},
@@ -144,11 +176,14 @@ return {
 	},
 	config = function(_, opts)
 		require("snacks").setup(opts)
-		-- CAMBIO SUGERIDO: Usa Schedule para evitar que el dashboard se abra
-		-- mientras Neovim todavía está limpiando la memoria del buffer anterior.
+
+		local augroup = vim.api.nvim_create_augroup("SnacksOptimizations", { clear = true })
+
+		-- Retorno al Dashboard si no quedan buffers abiertos
 		vim.api.nvim_create_autocmd("BufDelete", {
+			group = augroup,
 			callback = function()
-				vim.schedule(function() -- Esto da un respiro al editor
+				vim.schedule(function()
 					local valid_bufs = vim.tbl_filter(function(b)
 						return vim.api.nvim_buf_is_valid(b) and vim.bo[b].buflisted
 					end, vim.api.nvim_list_bufs())
@@ -159,14 +194,33 @@ return {
 				end)
 			end,
 		})
-		-- TUS MAPEOS
+
+		-- Apertura automática de imágenes en el visor por defecto de Windows
+		vim.api.nvim_create_autocmd("BufReadCmd", {
+			group = augroup,
+			pattern = { "*.png", "*.jpg", "*.jpeg", "*.webp", "*.gif" },
+			callback = function(ev)
+				vim.ui.open(ev.file)
+				vim.api.nvim_buf_delete(ev.buf, { force = true })
+			end,
+		})
+
+		-- KEYMAPS PRINCIPALES
+		vim.keymap.set("n", "<leader>gx", function()
+			local file = vim.fn.expand("<cfile>")
+			if file ~= "" then
+				vim.ui.open(file)
+			end
+		end, { desc = "Abrir imagen/enlace externo" })
+
 		vim.keymap.set("n", "<leader>t", function()
 			Snacks.explorer()
 		end, { desc = "Explorador" })
-		-- Dentro de config = function(_, opts)
+
 		vim.keymap.set("n", "<leader>lg", function()
 			Snacks.lazygit()
 		end, { desc = "Abrir Lazygit" })
+
 		vim.keymap.set("n", "<leader>aa", function()
 			Snacks.dashboard.open()
 		end, { desc = "Dashboard" })

@@ -1,8 +1,9 @@
 # 💻 Neovim PC - Ultimate Cheat Sheet (Sincronizada)
+
 ## Líder
 |Comando|Descripción|
 | :--- | :--- |
-| `<leader>` | `,`|
+| `<leader>` | `,` |
 
 ## Archivos y Buffers
 |Comando|Descripción|
@@ -15,6 +16,10 @@
 | `<Tab>` | siguiente buffer|
 | `<S-Tab>` | buffer anterior|
 | `-` | abrir Oil (explorador de archivos)|
+| `<leader>gx` | abrir archivo/enlace externo con Snacks Explorer|
+| `<leader>t` | abrir explorador de archivos con Snacks|
+| `<leader>lg` | abrir Lazygit en terminal integrada con Snacks|
+| `<leader>aa` | abrir Dashboard con Snacks|
 
 ## Navegación y Layout
 |Comando|Descripción|
@@ -24,6 +29,11 @@
 | `<leader>m` | maximizar la ventana actual|
 | `<leader>=` | igualar tamaño de ventanas|
 | `<leader>zm` | activar/desactivar modo Zen Maximize|
+
+## Herramientas de Desarrollo
+|Comando|Descripción|
+| :--- | :--- |
+| `<leader>re` | correr el cliente Res (res.vim)|
 
 ## LSP y Programación
 |Comando|Descripción|
@@ -68,6 +78,7 @@
 | `<leader>gt` | ejecutar test Go con `dap-go`|
 | `<leader>dh` | hover variable en DAP|
 | `<leader>de` | evaluar expresión flotante DAP|
+| `<leader>da` | DAP: Repetir último test|
 
 ## Terminal y ToggleTerm
 |Comando|Descripción|
@@ -88,9 +99,9 @@
 ## 🤖 AI (CodeCompanion + Ollama)
 |Comando|Descripción|
 | :--- | :--- |
-| `<leader>ai` | Toggle AI Chat|
-| `<leader>ap` | AI Actions (v)|
-| `<leader>ae` | AI Inline Command|
+| `<leader>iq` | Toggle AI Chat|
+| `<leader>ii` | AI Inline Prompt|
+| `<leader>ie` | AI Actions / Explain|
 
 ## 📍 Harpoon
 |Comando|Descripción|
@@ -110,6 +121,9 @@
 | `<leader>fS` | símbolos del workspace dinámicos con Telescope|
 | `<leader>fp` | proyectos recientes con Snacks|
 | `<leader>hd` | buscar ayuda/documentación con Snacks|
+| `<leader>aa` | abrir Dashboard con Snacks|
+| `<leader>t` | abrir explorador con Snacks|
+| `<leader>lg` | abrir Lazygit con Snacks|
 
 ## 🗄️ Base de Datos
 |Comando|Descripción|

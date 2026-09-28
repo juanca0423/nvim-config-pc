@@ -38,6 +38,7 @@ return {
 					"glimmer",
 					"handlebars",
 					"powershell",
+					"latex",
 				},
 				highlight = {
 					enable = true,

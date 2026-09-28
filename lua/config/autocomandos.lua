@@ -73,6 +73,8 @@ vim.filetype.add({
 	},
 })
 
+vim.treesitter.language.register("glimmer", "handlebars")
+
 vim.api.nvim_create_user_command("OpenDocs", function()
 	-- Usamos la variable de entorno USERPROFILE para que sea una ruta exacta
 	local home = os.getenv("USERPROFILE"):gsub("\\", "/")
@@ -93,8 +95,6 @@ vim.api.nvim_create_user_command("OpenDocs", function()
 		hidden = true,
 	})
 end, {})
-
-
 
 -- 5. AJUSTES DE TERMINAL
 -- Quitar números de línea y entrar en modo inserto automáticamente en la terminal

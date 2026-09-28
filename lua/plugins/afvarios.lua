@@ -25,7 +25,7 @@ return {
 		},
 	},
 
-	-- 3. Iconos y EstÃ©tica
+	-- 3. Iconos y Esttica
 	{
 		"onsails/lspkind.nvim",
 		config = function()
@@ -64,48 +64,24 @@ return {
 	},
 	-- 4. Kulala (Cliente HTTP para Go/APIs)
 	{
-		"mistweaverco/kulala.nvim",
-		keys = {
-			{
-				"<leader>hr",
-				function()
-					require("kulala").run()
-				end,
-				desc = "Ejecutar peticiÃ³n HTTP",
-			},
-			{
-				"<leader>hv",
-				function()
-					require("kulala").toggle_view()
-				end,
-				desc = "Cambiar vista (Cuerpo/Headers)",
-			},
-			{
-				"<leader>hn",
-				function()
-					require("kulala").jump_next()
-				end,
-				desc = "Siguiente peticiÃ³n",
-			},
-			{
-				"<leader>hp",
-				function()
-					require("kulala").jump_prev()
-				end,
-				desc = "PeticiÃ³n anterior",
-			},
+		"rest-nvim/rest.nvim",
+		version = "v3.*",
+		ft = { "http", "rest" },
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"j-hui/fidget.nvim", -- ✅ Agregado: requerido por rest.nvim v3
 		},
-		-- En tu archivo de configuración de Kulala
-		opts = {
-			display_mode = "split",
-			split_direction = "vertical", -- Mejora para ver tu API a la par del código
-			default_view = "body",
-			icons = {
-				passed = "✔", -- O usa el icono: 
-				failed = "✖", -- O usa el icono: 
-				running = "󱎯", -- Este es el de carga
-			},
-		},
+		config = function()
+			require("rest").setup({
+				client = "curl",
+				result = {
+					split = {
+						horizontal = false,
+						in_place = false,
+						keep_focus = true,
+					},
+				},
+			})
+		end,
 	},
-	{ "echasnovski/mini.icons", version = "*" },
 }

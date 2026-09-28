@@ -1,8 +1,11 @@
--- Silenciar avisos de funciones obsoletas (Deprecations)
+-- Silenciar avisos de funciones obsoletas (Neovim 0.10+)
 vim.g.deprecation_warnings = false
--- Deshabilitar proveedores que no usamos (adiós avisos de Perl y Ruby)
+
+vim.g.mapleader = ","
+vim.g.maplocalleader = ","
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_ruby_provider = 0
+
 if vim.fn.has("win32") == 1 then
 	vim.opt.shell = vim.fn.executable("pwsh") == 1 and "pwsh" or "powershell"
 	-- ESTA LÍNEA ES EL ESCUDO:
@@ -23,25 +26,8 @@ if vim.fn.has("win32") == 1 then
 		end,
 	})
 end
--- 0. CODIFICACIÓN Y LEADER (Debe ir al puro principio)
-vim.g.mapleader = ","
--- 1. SOLUCIÓN PARA TREESITTER (Runtimepath)
-local data_path = vim.fn.stdpath("data"):gsub("\\", "/")
-local site_path = data_path .. "/site"
 
-if not vim.tbl_contains(vim.opt.rtp:get(), site_path) then
-	vim.opt.rtp:append(site_path)
-end
-
-vim.g.node_host_prog = vim.fn.expand("$APPDATA/npm/node_modules/neovim/bin/cli.js")
-
--- 3. CARGAR OPCIONES (Tus 2 espacios y diagnósticos)
-local ok_opts, _ = pcall(require, "opciones")
-if not ok_opts then
-	print("⚠️ No se encontró lua/opciones.lua")
-end
-
--- 4. INSTALACIÓN DE LAZY.NVIM
+-- Configuración de lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
 	vim.fn.system({
@@ -55,10 +41,24 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- 5. CONFIGURACIÓN DE LAZY (Estructura Corregida)
-require("lazy").setup({
-	spec = {
-		{ import = "plugins" }, -- Esto asume que tienes una carpeta lua/plugins/
+-- CONFIGURACIÓN DE LAZY
+require("lazy").setup("plugins", {
+	change_detection = { notify = false },
+	checker = { enabled = true },
+	performance = {
+		cache = { enabled = true },
+		rtp = {
+			disabled_plugins = {
+				"gzip",
+				"matchit",
+				"matchparen",
+				"netrwPlugin",
+				"tarPlugin",
+				"tohtml",
+				"tutor",
+				"zipPlugin",
+			},
+		},
 	},
 	ui = {
 		icons = {
@@ -74,20 +74,16 @@ require("lazy").setup({
 			source = "📄",
 			start = "🚀",
 			task = "📌",
-			lazy = "💤 ",
+			lazy = "💤",
 		},
 	},
 	rocks = { enabled = false },
-	performance = {
-		cache = { enabled = true },
-	},
 })
 
--- 6. CARGAR MAPAS Y AUTOCOMANDOS
+-- Carga segura de módulos personalizados
+pcall(require, "opciones")
 pcall(require, "mapas")
 pcall(require, "config.autocomandos")
-
--- Cheatsheet
 pcall(function()
 	require("config.generate_cheatsheet").setup()
 end)

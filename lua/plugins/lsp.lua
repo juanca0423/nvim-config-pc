@@ -14,13 +14,35 @@ return {
 
 		require("mason").setup()
 		require("mason-lspconfig").setup({
-			ensure_installed = { "gopls", "lua_ls", "ts_ls", "html", "sqls", "powershell-editor-services" },
+			ensure_installed = {
+				"gopls",
+				"lua_ls",
+				"ts_ls",
+				"html",
+				"sqls",
+				"marksman",
+				"emmet_ls",
+				"cssls",
+				"prettierd",
+				"ember-language-server",
+				"ember-template-lint",
+				"powershell-editor-services",
+			},
 		})
 
 		local capabilities = require("cmp_nvim_lsp").default_capabilities()
 		-- Esto quita el aviso molesto de "position encoding"
 		capabilities.offsetEncoding = { "utf-16" }
-		local servers = { "lua_ls", "gopls", "ts_ls", "html", "cssls", "sqls", "powershell_editor_services" }
+		local servers = {
+			"lua_ls",
+			"gopls",
+			"ts_ls",
+			"html",
+			"cssls",
+			"sqls",
+			"ember_ls",
+			"powershell_editor_services",
+		}
 
 		for _, server in ipairs(servers) do
 			local opts = { capabilities = capabilities }
@@ -41,6 +63,21 @@ return {
 							parameterNames = true,
 						},
 					},
+				}
+			elseif server == "emmet_ls" then
+				-- ✅ Configura los lenguajes donde quieres que funcione Emmet
+				opts.filetypes = {
+					"html",
+					"css",
+					"scss",
+					"javascript",
+					"javascriptreact",
+					"typescript",
+					"typescriptreact",
+					"vue",
+					"svelte",
+					"glimmer",
+					"handlebars",
 				}
 			elseif server == "powershell_editor_services" then
 				opts.settings = {

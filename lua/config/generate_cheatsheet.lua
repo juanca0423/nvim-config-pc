@@ -34,7 +34,11 @@ function M.setup()
 	file:write(string.format("| `<leader>wb` | abrir `http://localhost:8080` en el navegador|\n"))
 	file:write(string.format("| `<Tab>` | siguiente buffer|\n"))
 	file:write(string.format("| `<S-Tab>` | buffer anterior|\n"))
-	file:write(string.format("| `-` | abrir Oil (explorador de archivos)|\n\n"))
+	file:write(string.format("| `-` | abrir Oil (explorador de archivos)|\n"))
+	file:write(string.format("| `<leader>gx` | abrir archivo/enlace externo con Snacks Explorer|\n"))
+	file:write(string.format("| `<leader>t` | abrir explorador de archivos con Snacks|\n"))
+	file:write(string.format("| `<leader>lg` | abrir Lazygit en terminal integrada con Snacks|\n"))
+	file:write(string.format("| `<leader>aa` | abrir Dashboard con Snacks|\n\n"))
 
 	-- Navegación y layout
 	file:write("## Navegación y Layout\n")
@@ -44,7 +48,13 @@ function M.setup()
 	file:write(string.format("| `<M-Right>` / `<M-Left>` / `<M-Down>` / `<M-Up>` | agrandar/reducir ventana|\n"))
 	file:write(string.format("| `<leader>m` | maximizar la ventana actual|\n"))
 	file:write(string.format("| `<leader>=` | igualar tamaño de ventanas|\n"))
-	file:write(string.format("| `<leader>zm` | activar/desactivar modo Zen Maximize|\n\n"))
+	file:write(string.format("| `<leader>zm` | activar/desactivar modo Zen Maximize|\n"))
+
+	-- res.vim
+	file:write("## Herramientas de Desarrollo\n")
+	file:write("|Comando|Descripción|\n")
+	file:write("| :--- | :--- |\n")
+	file:write(string.format("| `<leader>re` | correr el cliente Res (res.vim)|\n\n"))
 
 	-- LSP y programación
 	file:write("## LSP y Programación\n")
@@ -91,7 +101,8 @@ function M.setup()
 	file:write(string.format("| `<leader>dr` | reiniciar DAP / Abrir REPL|\n"))
 	file:write(string.format("| `<leader>gt` | ejecutar test Go con `dap-go`|\n"))
 	file:write(string.format("| `<leader>dh` | hover variable en DAP|\n"))
-	file:write(string.format("| `<leader>de` | evaluar expresión flotante DAP|\n\n"))
+	file:write(string.format("| `<leader>de` | evaluar expresión flotante DAP|\n"))
+	file:write(string.format("| `<leader>da` | DAP: Repetir último test|\n\n"))
 
 	-- Terminal y ToggleTerm
 	file:write("## Terminal y ToggleTerm\n")
@@ -115,9 +126,9 @@ function M.setup()
 	file:write("## 🤖 AI (CodeCompanion + Ollama)\n")
 	file:write("|Comando|Descripción|\n")
 	file:write("| :--- | :--- |\n")
-	file:write(string.format("| `<leader>ai` | Toggle AI Chat|\n"))
-	file:write(string.format("| `<leader>ap` | AI Actions (v)|\n"))
-	file:write(string.format("| `<leader>ae` | AI Inline Command|\n\n"))
+	file:write(string.format("| `<leader>iq` | Toggle AI Chat|\n"))
+	file:write(string.format("| `<leader>ii` | AI Inline Prompt|\n"))
+	file:write(string.format("| `<leader>ie` | AI Actions / Explain|\n\n"))
 
 	-- Harpoon
 	file:write("## 📍 Harpoon\n")
@@ -138,7 +149,10 @@ function M.setup()
 	file:write(string.format("| `<leader>fs` | símbolos del documento con Telescope|\n"))
 	file:write(string.format("| `<leader>fS` | símbolos del workspace dinámicos con Telescope|\n"))
 	file:write(string.format("| `<leader>fp` | proyectos recientes con Snacks|\n"))
-	file:write(string.format("| `<leader>hd` | buscar ayuda/documentación con Snacks|\n\n"))
+	file:write(string.format("| `<leader>hd` | buscar ayuda/documentación con Snacks|\n"))
+	file:write(string.format("| `<leader>aa` | abrir Dashboard con Snacks|\n"))
+	file:write(string.format("| `<leader>t` | abrir explorador con Snacks|\n"))
+	file:write(string.format("| `<leader>lg` | abrir Lazygit con Snacks|\n\n"))
 
 	-- Base de datos
 	file:write("## 🗄️ Base de Datos\n")
