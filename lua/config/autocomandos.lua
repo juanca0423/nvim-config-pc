@@ -13,7 +13,7 @@ vim.api.nvim_set_hl(0, "TreesitterContextLineNumber", { fg = "#F9E2AF", bg = "#1
 vim.api.nvim_create_autocmd("BufEnter", {
 	callback = function()
 		if vim.bo.filetype ~= "alpha" then
-			pcall(require("lualine").refresh)
+			pcall(function() require("lualine").refresh() end)
 		end
 	end,
 })
